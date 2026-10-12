@@ -2,6 +2,7 @@
 import Layout from '../../layouts/Layout.astro';
 import { HEROES } from '../../data/heroes';
 import { FACTIONS } from '../../data/factions';
+import { getPath } from '../../utils/paths';
 
 const factions = FACTIONS;
 
@@ -86,7 +87,7 @@ const getFactionBadge = (faction: string) => {
       {HEROES.map((hero) => {
         return (
           <a
-            href={`/heroes/${hero.id}`}
+            href={getPath(`/heroes/${hero.id}`)}
             class="group bg-slate-900/70 border border-slate-800 hover:border-amber-500/50 rounded-2xl p-5 transition-all duration-300 hover:shadow-xl hover:shadow-amber-500/10 hover:-translate-y-1 flex flex-col justify-between"
           >
             <div>

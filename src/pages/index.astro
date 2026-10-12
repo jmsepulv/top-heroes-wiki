@@ -3,6 +3,7 @@ import Layout from '../layouts/Layout.astro';
 import { HEROES } from '../data/heroes';
 import { LINEUPS } from '../data/lineups';
 import { FACTIONS } from '../data/factions';
+import { getPath } from '../utils/paths';
 
 const topHeroes = HEROES.filter((h) => h.rarity === 'mythic');
 const featuredLineups = LINEUPS.filter((l) => l.tier === 'S+').slice(0, 3);
@@ -36,14 +37,14 @@ const featuredLineups = LINEUPS.filter((l) => l.tier === 'S+').slice(0, 3);
       <!-- CTAs -->
       <div class="mt-10 flex flex-wrap items-center justify-center gap-4">
         <a
-          href="/roster"
+          href={getPath('/roster')}
           class="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-slate-950 font-black px-8 py-4 rounded-2xl text-sm uppercase tracking-wider shadow-xl shadow-orange-500/25 transition-all hover:scale-105 active:scale-95 flex items-center gap-2"
         >
           <span>Open Interactive Roster Builder</span>
           <span class="text-base">&rarr;</span>
         </a>
         <a
-          href="/heroes"
+          href={getPath('/heroes')}
           class="bg-slate-900 hover:bg-slate-800 text-white font-bold px-7 py-4 rounded-2xl text-sm transition-all border border-slate-800 hover:border-slate-700"
         >
           Browse Heroes Database ({HEROES.length})
@@ -126,7 +127,7 @@ const featuredLineups = LINEUPS.filter((l) => l.tier === 'S+').slice(0, 3);
           <span class="text-xs font-bold uppercase tracking-wider text-amber-400">The Three Kingdoms</span>
           <h2 class="text-2xl sm:text-3xl font-black text-white mt-1">Factions & Combat Styles</h2>
         </div>
-        <a href="/heroes" class="text-xs font-semibold text-slate-400 hover:text-white transition-colors">
+        <a href={getPath('/heroes')} class="text-xs font-semibold text-slate-400 hover:text-white transition-colors">
           View all faction heroes &rarr;
         </a>
       </div>
@@ -153,7 +154,7 @@ const featuredLineups = LINEUPS.filter((l) => l.tier === 'S+').slice(0, 3);
               <span class="text-[10px] text-slate-400 font-semibold uppercase block mb-2">Featured Champions:</span>
               <div class="flex items-center gap-2">
                 {HEROES.filter((h) => h.faction === f.id).slice(0, 4).map((h) => (
-                  <a href={`/heroes/${h.id}`} class="w-10 h-10 rounded-lg overflow-hidden border border-slate-800 hover:border-amber-400 transition-colors bg-slate-950" title={h.name}>
+                  <a href={getPath(`/heroes/${h.id}`)} class="w-10 h-10 rounded-lg overflow-hidden border border-slate-800 hover:border-amber-400 transition-colors bg-slate-950" title={h.name}>
                     <img src={h.avatar} alt={h.name} class="w-full h-full object-cover" />
                   </a>
                 ))}
@@ -173,7 +174,7 @@ const featuredLineups = LINEUPS.filter((l) => l.tier === 'S+').slice(0, 3);
           <span class="text-xs font-bold uppercase tracking-wider text-emerald-400">Current Meta Pinnacle</span>
           <h2 class="text-2xl sm:text-3xl font-black text-white mt-1">S+ Tier Recommended Lineups</h2>
         </div>
-        <a href="/lineups" class="text-xs font-semibold text-amber-400 hover:underline">
+        <a href={getPath('/lineups')} class="text-xs font-semibold text-amber-400 hover:underline">
           View all lineup breakdowns &rarr;
         </a>
       </div>
@@ -198,7 +199,7 @@ const featuredLineups = LINEUPS.filter((l) => l.tier === 'S+').slice(0, 3);
 
             <div class="pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs">
               <span class="text-slate-500 font-medium">6 Hero Queue</span>
-              <a href={`/lineups#${lineup.id}`} class="text-amber-400 font-bold hover:underline">
+              <a href={getPath(`/lineups#${lineup.id}`)} class="text-amber-400 font-bold hover:underline">
                 View Formation &rarr;
               </a>
             </div>

@@ -1,12 +1,17 @@
 ---
+import { getPath } from '../utils/paths';
+
 const currentPath = Astro.url.pathname;
-const isActive = (path: string) => (path === '/' ? currentPath === '/' : currentPath.startsWith(path));
+const isActive = (path: string) => {
+  const target = getPath(path);
+  return path === '/' ? currentPath === target || currentPath === target.replace(/\/$/, '') : currentPath.startsWith(target);
+};
 ---
 
 <header class="sticky top-0 z-50 backdrop-blur-md bg-slate-950/80 border-b border-slate-800">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
     <!-- Brand Logo -->
-    <a href="/" class="flex items-center gap-3 group">
+    <a href={getPath('/')} class="flex items-center gap-3 group">
       <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 via-red-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-amber-500/20 group-hover:scale-105 transition-transform">
         <svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M12 2l8 4.5v6.5c0 5-3.5 9.5-8 11-4.5-1.5-8-6-8-11V6.5L12 2z" />
@@ -26,7 +31,7 @@ const isActive = (path: string) => (path === '/' ? currentPath === '/' : current
     <!-- Nav Links -->
     <nav class="hidden md:flex items-center gap-1">
       <a
-        href="/"
+        href={getPath('/')}
         class={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
           isActive('/') ? 'text-white bg-slate-800 shadow-sm' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
         }`}
@@ -34,7 +39,7 @@ const isActive = (path: string) => (path === '/' ? currentPath === '/' : current
         Home
       </a>
       <a
-        href="/roster"
+        href={getPath('/roster')}
         class={`px-3 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${
           isActive('/roster') ? 'text-amber-400 bg-amber-500/10 border border-amber-500/30' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
         }`}
@@ -43,7 +48,7 @@ const isActive = (path: string) => (path === '/' ? currentPath === '/' : current
         <span class="bg-amber-500 text-black text-[10px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wider">Interactive</span>
       </a>
       <a
-        href="/heroes"
+        href={getPath('/heroes')}
         class={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
           isActive('/heroes') ? 'text-white bg-slate-800 shadow-sm' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
         }`}
@@ -51,7 +56,7 @@ const isActive = (path: string) => (path === '/' ? currentPath === '/' : current
         Heroes Directory
       </a>
       <a
-        href="/lineups"
+        href={getPath('/lineups')}
         class={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
           isActive('/lineups') ? 'text-white bg-slate-800 shadow-sm' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
         }`}
@@ -67,7 +72,7 @@ const isActive = (path: string) => (path === '/' ? currentPath === '/' : current
         Patch 1.24.0 Live
       </div>
       <a
-        href="/roster"
+        href={getPath('/roster')}
         class="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-slate-950 font-bold text-xs uppercase tracking-wider px-3.5 py-2 rounded-lg shadow-md shadow-orange-500/20 transition-all hover:scale-105"
       >
         Check Lineups
@@ -75,4 +80,3 @@ const isActive = (path: string) => (path === '/' ? currentPath === '/' : current
     </div>
   </div>
 </header>
-

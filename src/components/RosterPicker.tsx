@@ -8,6 +8,7 @@ import {
   saveRosterToStorage,
   generateShareableUrl,
 } from '../utils/rosterStorage';
+import { getPath } from '../utils/paths';
 import {
   Check,
   Shield,
@@ -392,7 +393,7 @@ export default function RosterPicker() {
 
                   {/* Deep dive link */}
                   <a
-                    href={`/heroes/${hero.id}`}
+                    href={getPath(`/heroes/${hero.id}`)}
                     onClick={(e) => e.stopPropagation()}
                     className="mt-2.5 block text-center text-[10px] font-semibold text-slate-400 hover:text-amber-400 pt-2 border-t border-slate-800/60"
                   >
@@ -553,7 +554,7 @@ export default function RosterPicker() {
                           {rec.lineup.notes}
                         </span>
                         <a
-                          href={`/lineups#${rec.lineup.id}`}
+                          href={getPath(`/lineups#${rec.lineup.id}`)}
                           className="text-amber-400 hover:text-amber-300 font-semibold flex items-center gap-1 hover:underline text-[11px]"
                         >
                           Strategy & Builds &rarr;

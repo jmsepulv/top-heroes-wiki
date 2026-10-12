@@ -6,6 +6,8 @@ import tailwindcss from '@tailwindcss/vite';
 
 // https://astro.build/config
 export default defineConfig({
+  site: 'https://jmsepulv.github.io',
+  base: '/top-heroes-wiki',
   integrations: [react()],
 
   vite: {

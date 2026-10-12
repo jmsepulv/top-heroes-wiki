@@ -2,6 +2,7 @@
 import Layout from '../../layouts/Layout.astro';
 import { LINEUPS } from '../../data/lineups';
 import { HEROES, getHeroById } from '../../data/heroes';
+import { getPath } from '../../utils/paths';
 
 const getTierColor = (tier: string) => {
   switch (tier) {
@@ -37,7 +38,7 @@ const getTierColor = (tier: string) => {
 
       <div class="mt-6 flex flex-wrap items-center justify-center gap-4">
         <a
-          href="/roster"
+          href={getPath('/roster')}
           class="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-slate-950 font-bold px-5 py-2.5 rounded-xl text-xs uppercase tracking-wider shadow-lg shadow-orange-500/20 transition-all hover:scale-105"
         >
           Check My Roster Against These Lineups &rarr;
@@ -99,7 +100,7 @@ const getTierColor = (tier: string) => {
               </div>
 
               <a
-                href={`/roster`}
+                href={getPath('/roster')}
                 class="shrink-0 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold px-4 py-2 rounded-xl transition-colors border border-slate-700"
               >
                 Match with My Roster &rarr;
@@ -132,11 +133,11 @@ const getTierColor = (tier: string) => {
                         </span>
                       </div>
 
-                      <a href={`/heroes/${hero.id}`} class="w-16 h-16 rounded-xl overflow-hidden bg-slate-950 my-1 border border-slate-700 hover:border-amber-400 transition-colors">
+                      <a href={getPath(`/heroes/${hero.id}`)} class="w-16 h-16 rounded-xl overflow-hidden bg-slate-950 my-1 border border-slate-700 hover:border-amber-400 transition-colors">
                         <img src={hero.avatar} alt={hero.name} class="w-full h-full object-cover" />
                       </a>
 
-                      <a href={`/heroes/${hero.id}`} class="text-xs font-bold text-white hover:text-amber-400 transition-colors mt-1">
+                      <a href={getPath(`/heroes/${hero.id}`)} class="text-xs font-bold text-white hover:text-amber-400 transition-colors mt-1">
                         {hero.name}
                       </a>
                       <span class="text-[10px] text-slate-400 capitalize">{hero.role}</span>
@@ -149,7 +150,7 @@ const getTierColor = (tier: string) => {
                             {slot.substitutes.map((subId) => {
                               const subHero = getHeroById(subId);
                               return subHero ? (
-                                <a href={`/heroes/${subHero.id}`} class="text-slate-300 hover:text-amber-400 hover:underline">
+                                <a href={getPath(`/heroes/${subHero.id}`)} class="text-slate-300 hover:text-amber-400 hover:underline">
                                   {subHero.name.split(' ')[0]}
                                 </a>
                               ) : null;
