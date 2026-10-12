@@ -1,0 +1,14 @@
+---
+import Layout from '../layouts/Layout.astro';
+import RosterPicker from '../components/RosterPicker';
+---
+
+<Layout
+  title="Interactive Roster Builder & Team Optimizer | Top Heroes Guide"
+  description="Select the Top Heroes you currently own to instantly generate optimal competitive lineups, calculate faction auras, and discover one-hero-away compositions."
+>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+    <RosterPicker client:load />
+  </div>
+</Layout>
+

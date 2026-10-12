@@ -1,11 +1,210 @@
 ---
-import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
+import { HEROES } from '../data/heroes';
+import { LINEUPS } from '../data/lineups';
+import { FACTIONS } from '../data/factions';
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const topHeroes = HEROES.filter((h) => h.rarity === 'mythic');
+const featuredLineups = LINEUPS.filter((l) => l.tier === 'S+').slice(0, 3);
 ---
 
-<Layout>
-	<Welcome />
+<Layout
+  title="Top Heroes Interactive Guide & Roster Builder | Patch 1.24"
+  description="Fan-made interactive guide for Top Heroes. Build your roster, calculate faction aura synergies, and get personalized lineup recommendations."
+>
+  <!-- Hero Section -->
+  <section class="relative overflow-hidden pt-12 pb-20 md:pt-20 md:pb-28">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <!-- Patch Live Pill -->
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-bold uppercase tracking-wider mb-6">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span>Top Heroes Interactive Companion • Patch 1.24.0</span>
+      </div>
+
+      <!-- Main Headline -->
+      <h1 class="text-4xl sm:text-6xl lg:text-7xl font-black text-white tracking-tight max-w-4xl mx-auto leading-[1.1]">
+        Stop Guessing Your Lineups. <br />
+        <span class="bg-gradient-to-r from-amber-400 via-orange-500 to-red-500 bg-clip-text text-transparent">
+          Field Your Best Team Now.
+        </span>
+      </h1>
+
+      <p class="mt-6 text-slate-300 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
+        Mark the heroes you own in your inventory. Our synergy engine analyzes meta tier lists to deliver your highest-DPS lineups, approved substitutes, and what you're just <strong>one hero away</strong> from fielding.
+      </p>
+
+      <!-- CTAs -->
+      <div class="mt-10 flex flex-wrap items-center justify-center gap-4">
+        <a
+          href="/roster"
+          class="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-slate-950 font-black px-8 py-4 rounded-2xl text-sm uppercase tracking-wider shadow-xl shadow-orange-500/25 transition-all hover:scale-105 active:scale-95 flex items-center gap-2"
+        >
+          <span>Open Interactive Roster Builder</span>
+          <span class="text-base">&rarr;</span>
+        </a>
+        <a
+          href="/heroes"
+          class="bg-slate-900 hover:bg-slate-800 text-white font-bold px-7 py-4 rounded-2xl text-sm transition-all border border-slate-800 hover:border-slate-700"
+        >
+          Browse Heroes Database ({HEROES.length})
+        </a>
+      </div>
+
+      <!-- Live Meta Snapshot Stats -->
+      <div class="mt-16 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
+        <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 backdrop-blur-md">
+          <div class="text-2xl md:text-3xl font-black text-amber-400">{HEROES.length}</div>
+          <div class="text-xs text-slate-400 uppercase font-semibold mt-1">Verified Heroes</div>
+        </div>
+        <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 backdrop-blur-md">
+          <div class="text-2xl md:text-3xl font-black text-emerald-400">{LINEUPS.length}</div>
+          <div class="text-xs text-slate-400 uppercase font-semibold mt-1">Meta Lineups</div>
+        </div>
+        <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 backdrop-blur-md">
+          <div class="text-2xl md:text-3xl font-black text-blue-400">+25%</div>
+          <div class="text-xs text-slate-400 uppercase font-semibold mt-1">Mono-Aura ATK/HP</div>
+        </div>
+        <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 backdrop-blur-md">
+          <div class="text-2xl md:text-3xl font-black text-purple-400">1.24.0</div>
+          <div class="text-xs text-slate-400 uppercase font-semibold mt-1">Active Patch</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive Features Highlight -->
+  <section class="py-16 bg-slate-950/60 border-y border-slate-800/80">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-3xl mx-auto mb-12">
+        <h2 class="text-2xl sm:text-3xl font-black text-white">
+          Engineered for Competitive Clarity
+        </h2>
+        <p class="text-sm text-slate-400 mt-2">
+          Everything you need to optimize gear, faction auras, and tavern summoning priorities.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 hover:border-amber-500/40 transition-colors">
+          <div class="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 text-xl font-bold mb-4">
+            🎯
+          </div>
+          <h3 class="text-lg font-bold text-white mb-2">Roster-Driven Matching</h3>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Never wonder which hero to invest in next. The system scans your exact inventory and sorts meta lineups into <strong>Ready Now</strong>, <strong>1 Hero Away</strong>, and future goals.
+          </p>
+        </div>
+
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 hover:border-emerald-500/40 transition-colors">
+          <div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-xl font-bold mb-4">
+            ⚡
+          </div>
+          <h3 class="text-lg font-bold text-white mb-2">Live Faction Auras</h3>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Automatically calculates dynamic bonuses based on active heroes: +5% up to the legendary 6-Hero Mono Aura (+25% ATK & +25% HP), as well as 3+3 hybrid synergies.
+          </p>
+        </div>
+
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 hover:border-blue-500/40 transition-colors">
+          <div class="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-blue-400 text-xl font-bold mb-4">
+            🔗
+          </div>
+          <h3 class="text-lg font-bold text-white mb-2">One-Click Shareable Links</h3>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Share your roster with guildmates or Discord advisors with zero login required. Your owned heroes are encoded into a compact shareable link.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Factions Showcase Section -->
+  <section class="py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-amber-400">The Three Kingdoms</span>
+          <h2 class="text-2xl sm:text-3xl font-black text-white mt-1">Factions & Combat Styles</h2>
+        </div>
+        <a href="/heroes" class="text-xs font-semibold text-slate-400 hover:text-white transition-colors">
+          View all faction heroes &rarr;
+        </a>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {FACTIONS.map((f) => (
+          <div class={`rounded-2xl p-6 border bg-slate-900/60 backdrop-blur-md ${
+            f.id === 'league'
+              ? 'border-blue-500/40 hover:border-blue-500'
+              : f.id === 'nature'
+              ? 'border-emerald-500/40 hover:border-emerald-500'
+              : 'border-red-500/40 hover:border-red-500'
+          } transition-all`}>
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="text-xl font-black text-white capitalize">{f.name}</h3>
+              <span class="text-xs font-bold uppercase px-2 py-0.5 rounded-full bg-slate-800 text-slate-300">
+                Aura: +25%
+              </span>
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed mb-4">
+              {f.description}
+            </p>
+            <div class="pt-4 border-t border-slate-800/80">
+              <span class="text-[10px] text-slate-400 font-semibold uppercase block mb-2">Featured Champions:</span>
+              <div class="flex items-center gap-2">
+                {HEROES.filter((h) => h.faction === f.id).slice(0, 4).map((h) => (
+                  <a href={`/heroes/${h.id}`} class="w-10 h-10 rounded-lg overflow-hidden border border-slate-800 hover:border-amber-400 transition-colors bg-slate-950" title={h.name}>
+                    <img src={h.avatar} alt={h.name} class="w-full h-full object-cover" />
+                  </a>
+                ))}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured S+ Lineups Preview -->
+  <section class="py-16 bg-slate-950/80 border-t border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-emerald-400">Current Meta Pinnacle</span>
+          <h2 class="text-2xl sm:text-3xl font-black text-white mt-1">S+ Tier Recommended Lineups</h2>
+        </div>
+        <a href="/lineups" class="text-xs font-semibold text-amber-400 hover:underline">
+          View all lineup breakdowns &rarr;
+        </a>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {featuredLineups.map((lineup) => (
+          <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center gap-2 mb-2">
+                <span class="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-amber-500 text-slate-950">
+                  {lineup.tier} TIER
+                </span>
+                <span class="text-xs text-slate-400 uppercase font-semibold">
+                  {lineup.gameMode.replace('_', ' ')}
+                </span>
+              </div>
+              <h3 class="text-base font-bold text-white mb-2">{lineup.name}</h3>
+              <p class="text-xs text-slate-400 line-clamp-2 leading-relaxed mb-4">
+                {lineup.description}
+              </p>
+            </div>
+
+            <div class="pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs">
+              <span class="text-slate-500 font-medium">6 Hero Queue</span>
+              <a href={`/lineups#${lineup.id}`} class="text-amber-400 font-bold hover:underline">
+                View Formation &rarr;
+              </a>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
 </Layout>

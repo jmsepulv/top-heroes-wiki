@@ -1,0 +1,176 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { LINEUPS } from '../../data/lineups';
+import { HEROES, getHeroById } from '../../data/heroes';
+
+const getTierColor = (tier: string) => {
+  switch (tier) {
+    case 'S+':
+      return 'bg-gradient-to-r from-red-500 to-amber-500 text-slate-950 font-black shadow-md shadow-red-500/20';
+    case 'S':
+      return 'bg-amber-500 text-slate-950 font-black';
+    case 'A':
+      return 'bg-blue-500 text-white font-bold';
+    default:
+      return 'bg-slate-700 text-slate-200';
+  }
+};
+---
+
+<Layout
+  title="Top Heroes Meta Lineups & Tier List (Patch 1.24) | Strategy Guide"
+  description="Verified Top Heroes lineup tier lists and team compositions. Frontline/backline positioning, core heroes, acceptable substitutes, and faction aura bonuses."
+>
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <!-- Header -->
+    <div class="text-center max-w-3xl mx-auto mb-12">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold mb-4">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span>Meta Tier List • Verified for Patch 1.24.0</span>
+      </div>
+      <h1 class="text-3xl md:text-5xl font-black text-white tracking-tight">
+        Competitive Lineups & Team Formations
+      </h1>
+      <p class="mt-3 text-slate-400 text-base leading-relaxed">
+        Top Heroes queues feature 6 hero slots (2 frontline + 4 backline). Discover the highest-performing compositions, their faction aura multipliers, and approved substitute heroes you can slot in right away.
+      </p>
+
+      <div class="mt-6 flex flex-wrap items-center justify-center gap-4">
+        <a
+          href="/roster"
+          class="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-slate-950 font-bold px-5 py-2.5 rounded-xl text-xs uppercase tracking-wider shadow-lg shadow-orange-500/20 transition-all hover:scale-105"
+        >
+          Check My Roster Against These Lineups &rarr;
+        </a>
+      </div>
+    </div>
+
+    <!-- Formation & Aura Explainer Card -->
+    <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 mb-12 backdrop-blur-md">
+      <h3 class="text-base font-bold text-white mb-3 flex items-center gap-2">
+        <span class="text-amber-400">💡</span>
+        Formation Rules & Faction Aura Mechanics
+      </h3>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs text-slate-300">
+        <div class="bg-slate-950/60 p-4 rounded-xl border border-slate-800">
+          <h4 class="font-bold text-white uppercase mb-1">Queue Grid Layout</h4>
+          <p class="text-slate-400 leading-relaxed">
+            Formations are organized into <strong>Front Row (Slots 1 & 2)</strong> for high HP/DEF tanks and bruisers, and <strong>Back Row (Slots 3, 4, 5, 6)</strong> for ranged DPS, controllers, and buffers.
+          </p>
+        </div>
+        <div class="bg-slate-950/60 p-4 rounded-xl border border-slate-800">
+          <h4 class="font-bold text-white uppercase mb-1">Mono-Faction Synergy</h4>
+          <p class="text-slate-400 leading-relaxed">
+            Fielding 6 heroes of the same faction grants the maximum <strong>+25% ATK & +25% HP</strong> aura. This currently out-scales rainbow compositions in high-level Arena.
+          </p>
+        </div>
+        <div class="bg-slate-950/60 p-4 rounded-xl border border-slate-800">
+          <h4 class="font-bold text-white uppercase mb-1">Substitutions</h4>
+          <p class="text-slate-400 leading-relaxed">
+            If you lack a core Mythic or Legendary hero, check the approved substitute heroes indicated below each slot to field a functional team immediately.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lineups List -->
+    <div class="space-y-8">
+      {LINEUPS.map((lineup) => {
+        return (
+          <div
+            id={lineup.id}
+            class="bg-slate-900/70 border border-slate-800 rounded-3xl p-6 md:p-8 backdrop-blur-md hover:border-slate-700 transition-all shadow-xl"
+          >
+            <!-- Lineup Top Header -->
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-5 mb-6">
+              <div>
+                <div class="flex items-center gap-2.5 mb-2">
+                  <span class={`text-xs px-2.5 py-0.5 rounded-full ${getTierColor(lineup.tier)}`}>
+                    {lineup.tier} TIER
+                  </span>
+                  <span class="text-xs uppercase font-bold text-slate-400 bg-slate-800 px-2.5 py-0.5 rounded-full">
+                    {lineup.gameMode.replace('_', ' ')}
+                  </span>
+                  <span class="text-xs text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-0.5 rounded-full font-semibold">
+                    Verified: Patch {lineup.patchVersion}
+                  </span>
+                </div>
+                <h2 class="text-2xl font-black text-white">{lineup.name}</h2>
+              </div>
+
+              <a
+                href={`/roster`}
+                class="shrink-0 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold px-4 py-2 rounded-xl transition-colors border border-slate-700"
+              >
+                Match with My Roster &rarr;
+              </a>
+            </div>
+
+            <!-- Description -->
+            <p class="text-sm text-slate-300 mb-6 leading-relaxed">
+              {lineup.description}
+            </p>
+
+            <!-- 6 Formation Slots Visualizer (2 Front Row + 4 Back Row) -->
+            <div class="bg-slate-950/70 border border-slate-800 rounded-2xl p-5 mb-6">
+              <div class="flex items-center justify-between mb-4 text-xs font-bold uppercase tracking-wider text-slate-400">
+                <span>Formation Lineup (6 Slots)</span>
+                <span class="text-amber-400 font-semibold">Front Row (1-2) • Back Row (3-6)</span>
+              </div>
+
+              <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+                {lineup.slots.map((slot) => {
+                  const hero = getHeroById(slot.heroId);
+                  if (!hero) return null;
+
+                  return (
+                    <div class="bg-slate-900 border border-slate-800 rounded-xl p-3 flex flex-col items-center text-center">
+                      <div class="text-[10px] text-slate-400 uppercase font-semibold mb-1 flex items-center justify-between w-full">
+                        <span>Slot {slot.slotIndex}</span>
+                        <span class={`text-[9px] px-1 rounded ${slot.isCore ? 'bg-amber-500/20 text-amber-400' : 'bg-slate-800 text-slate-400'}`}>
+                          {slot.isCore ? 'CORE' : 'FLEX'}
+                        </span>
+                      </div>
+
+                      <a href={`/heroes/${hero.id}`} class="w-16 h-16 rounded-xl overflow-hidden bg-slate-950 my-1 border border-slate-700 hover:border-amber-400 transition-colors">
+                        <img src={hero.avatar} alt={hero.name} class="w-full h-full object-cover" />
+                      </a>
+
+                      <a href={`/heroes/${hero.id}`} class="text-xs font-bold text-white hover:text-amber-400 transition-colors mt-1">
+                        {hero.name}
+                      </a>
+                      <span class="text-[10px] text-slate-400 capitalize">{hero.role}</span>
+
+                      {/* Substitutes */}
+                      {slot.substitutes.length > 0 && (
+                        <div class="mt-2.5 pt-2 border-t border-slate-800 w-full text-[10px] text-slate-400">
+                          <span class="block text-[9px] text-slate-400 font-semibold uppercase">Subs:</span>
+                          <div class="flex flex-wrap justify-center gap-1 mt-0.5">
+                            {slot.substitutes.map((subId) => {
+                              const subHero = getHeroById(subId);
+                              return subHero ? (
+                                <a href={`/heroes/${subHero.id}`} class="text-slate-300 hover:text-amber-400 hover:underline">
+                                  {subHero.name.split(' ')[0]}
+                                </a>
+                              ) : null;
+                            })}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            <!-- Strategy & Tactical Notes -->
+            <div class="bg-slate-950/40 rounded-xl p-4 border border-slate-800/80 text-xs text-slate-400">
+              <strong class="text-slate-200">Execution Strategy:</strong> {lineup.notes}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  </div>
+</Layout>
+

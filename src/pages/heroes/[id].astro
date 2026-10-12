@@ -1,0 +1,329 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { HEROES, getHeroById } from '../../data/heroes';
+import { getFactionById } from '../../data/factions';
+import { LINEUPS } from '../../data/lineups';
+
+export function getStaticPaths() {
+  return HEROES.map((hero) => ({
+    params: { id: hero.id },
+    props: { hero },
+  }));
+}
+
+const { hero } = Astro.props;
+const faction = getFactionById(hero.faction);
+
+// Related meta lineups featuring this hero
+const relatedLineups = LINEUPS.filter((l) =>
+  l.slots.some((s) => s.heroId === hero.id || s.substitutes.includes(hero.id))
+);
+
+const getRarityBadge = (rarity: string) => {
+  switch (rarity) {
+    case 'mythic':
+      return 'border-red-500/80 bg-red-950/60 text-red-300 shadow-md shadow-red-500/20';
+    case 'legendary':
+      return 'border-amber-500/80 bg-amber-950/60 text-amber-300 shadow-md shadow-amber-500/20';
+    case 'epic':
+      return 'border-purple-500/80 bg-purple-950/60 text-purple-300 shadow-md shadow-purple-500/20';
+    default:
+      return 'border-slate-700 bg-slate-900 text-slate-300';
+  }
+};
+
+const getFactionBadge = (factionId: string) => {
+  switch (factionId) {
+    case 'league':
+      return 'bg-blue-600/30 text-blue-300 border-blue-500/40';
+    case 'nature':
+      return 'bg-emerald-600/30 text-emerald-300 border-emerald-500/40';
+    case 'horde':
+      return 'bg-red-600/30 text-red-300 border-red-500/40';
+    default:
+      return 'bg-slate-800 text-slate-300 border-slate-700';
+  }
+};
+---
+
+<Layout
+  title={`${hero.name} Guide: Best Builds, Skills & Synergies | Top Heroes`}
+  description={`Comprehensive guide for ${hero.name} in Top Heroes. Verified stat priorities, gear sets, skill breakdowns, and best teammates for patch 1.24.`}
+>
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+    <!-- Breadcrumbs -->
+    <nav class="flex items-center gap-2 text-xs text-slate-400 mb-6">
+      <a href="/" class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href="/heroes" class="hover:text-white transition-colors">Heroes</a>
+      <span>/</span>
+      <span class="text-white font-semibold">{hero.name}</span>
+    </nav>
+
+    <!-- Hero Hero Showcase Header -->
+    <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 md:p-8 backdrop-blur-md shadow-2xl relative overflow-hidden mb-10">
+      <div class="absolute -top-32 -right-32 w-80 h-80 rounded-full blur-3xl opacity-20 pointer-events-none bg-gradient-to-br from-amber-500 to-red-500"></div>
+
+      <div class="flex flex-col md:flex-row items-center md:items-start gap-8">
+        <!-- Hero Avatar -->
+        <div class="relative shrink-0">
+          <div class="w-32 h-32 md:w-40 md:h-40 rounded-3xl overflow-hidden border-4 border-slate-800 shadow-2xl bg-slate-950">
+            <img src={hero.avatar} alt={hero.name} class="w-full h-full object-cover" />
+          </div>
+          <div class="absolute -bottom-3 left-1/2 -translate-x-1/2 shrink-0">
+            <span class={`text-[11px] font-black uppercase px-3 py-1 rounded-full border ${getRarityBadge(hero.rarity)}`}>
+              {hero.rarity}
+            </span>
+          </div>
+        </div>
+
+        <!-- Hero Metadata -->
+        <div class="flex-grow text-center md:text-left space-y-3">
+          <div class="flex flex-wrap items-center justify-center md:justify-start gap-2">
+            <span class={`text-xs font-bold uppercase px-2.5 py-1 rounded-lg border ${getFactionBadge(hero.faction)}`}>
+              {hero.faction} Faction
+            </span>
+            <span class="text-xs bg-slate-800 text-slate-300 px-2.5 py-1 rounded-lg capitalize font-medium">
+              Role: {hero.role}
+            </span>
+            <span class="text-xs bg-slate-800 text-slate-300 px-2.5 py-1 rounded-lg capitalize font-medium">
+              Damage: {hero.damageType}
+            </span>
+            <span class="text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 px-2.5 py-1 rounded-lg font-semibold">
+              Verified: Patch 1.24.0
+            </span>
+          </div>
+
+          <div>
+            <h1 class="text-3xl md:text-4xl font-black text-white">{hero.name}</h1>
+            <p class="text-amber-400/90 font-medium text-sm mt-0.5">{hero.title}</p>
+          </div>
+
+          <p class="text-sm text-slate-300 leading-relaxed max-w-2xl">
+            {hero.description}
+          </p>
+
+          <!-- Action buttons -->
+          <div class="pt-3 flex flex-wrap items-center justify-center md:justify-start gap-3">
+            <a
+              href={`/roster?roster=${hero.id}`}
+              class="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-slate-950 font-bold px-4 py-2 rounded-xl text-xs uppercase tracking-wider shadow-lg shadow-orange-500/20 transition-all hover:scale-105"
+            >
+              Test in Roster Builder
+            </a>
+            <a
+              href="#builds"
+              class="bg-slate-800 hover:bg-slate-700 text-white font-semibold px-4 py-2 rounded-xl text-xs transition-colors"
+            >
+              Jump to Builds
+            </a>
+          </div>
+        </div>
+
+        <!-- Tier & Base Stats Card -->
+        <div class="w-full md:w-64 shrink-0 bg-slate-950/80 border border-slate-800 rounded-2xl p-4 space-y-4">
+          <div class="grid grid-cols-2 gap-2 text-center border-b border-slate-800 pb-3">
+            <div>
+              <div class="text-[10px] text-slate-400 uppercase font-semibold">PvP Tier</div>
+              <div class="text-xl font-black text-amber-400">{hero.tierRankings.pvp}</div>
+            </div>
+            <div>
+              <div class="text-[10px] text-slate-400 uppercase font-semibold">PvE Tier</div>
+              <div class="text-xl font-black text-emerald-400">{hero.tierRankings.pve}</div>
+            </div>
+          </div>
+
+          <div class="space-y-2 text-xs">
+            <div class="flex justify-between text-slate-400">
+              <span>Base HP:</span>
+              <span class="font-bold text-white">{hero.baseStats.hp.toLocaleString()}</span>
+            </div>
+            <div class="flex justify-between text-slate-400">
+              <span>Base ATK:</span>
+              <span class="font-bold text-white">{hero.baseStats.atk.toLocaleString()}</span>
+            </div>
+            <div class="flex justify-between text-slate-400">
+              <span>Base DEF:</span>
+              <span class="font-bold text-white">{hero.baseStats.def.toLocaleString()}</span>
+            </div>
+            <div class="flex justify-between text-slate-400">
+              <span>Speed:</span>
+              <span class="font-bold text-white">{hero.baseStats.spd}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Skills Section -->
+    <div class="mb-12">
+      <h2 class="text-xl font-black text-white mb-4 flex items-center gap-2">
+        <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
+        Skill Kit & Mechanics
+      </h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {hero.skills.map((skill) => (
+          <div class="bg-slate-900/70 border border-slate-800 rounded-2xl p-5 hover:border-slate-700 transition-colors">
+            <div class="flex items-center justify-between mb-3">
+              <span class={`text-[10px] font-bold uppercase px-2 py-0.5 rounded ${
+                skill.type === 'ultimate'
+                  ? 'bg-amber-500/20 text-amber-400 border border-amber-500/40'
+                  : skill.type === 'active'
+                  ? 'bg-blue-500/20 text-blue-400 border border-blue-500/40'
+                  : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
+              }`}>
+                {skill.type} Skill
+              </span>
+              {skill.cooldown && (
+                <span class="text-xs text-slate-400 font-medium">
+                  CD: {skill.cooldown}s
+                </span>
+              )}
+            </div>
+            <h3 class="text-base font-bold text-white mb-2">{skill.name}</h3>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              {skill.description}
+            </p>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <!-- Recommended Builds Section -->
+    <div id="builds" class="mb-12">
+      <h2 class="text-xl font-black text-white mb-4 flex items-center gap-2">
+        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+        Recommended Builds & Gear Sets
+      </h2>
+
+      <div class="space-y-6">
+        {hero.builds.map((build) => (
+          <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6">
+            <div class="flex flex-wrap items-center justify-between gap-3 mb-4 border-b border-slate-800 pb-3">
+              <div>
+                <h3 class="text-lg font-bold text-white">{build.name}</h3>
+                <span class="text-xs text-slate-400 uppercase font-semibold">Mode: {build.gameMode.replace('_', ' ')}</span>
+              </div>
+              <div class="text-xs text-emerald-400 font-semibold bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/30">
+                Verified for {build.patchVersion} ({build.lastVerified})
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4">
+              <!-- Stat Priorities -->
+              <div class="bg-slate-950/70 border border-slate-800/80 rounded-xl p-4">
+                <h4 class="text-xs uppercase font-bold text-slate-400 mb-2">Priority Substats</h4>
+                <ul class="space-y-1.5 text-xs text-slate-200">
+                  {build.statPriorities.map((stat, i) => (
+                    <li class="flex items-center gap-2">
+                      <span class="w-4 h-4 rounded-full bg-amber-500/20 text-amber-400 text-[10px] font-bold flex items-center justify-center shrink-0">
+                        {i + 1}
+                      </span>
+                      <span>{stat}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <!-- Recommended Gear -->
+              <div class="bg-slate-950/70 border border-slate-800/80 rounded-xl p-4">
+                <h4 class="text-xs uppercase font-bold text-slate-400 mb-2">Recommended Gear</h4>
+                <ul class="space-y-1.5 text-xs text-slate-200">
+                  {build.recommendedGear.map((gear) => (
+                    <li class="flex items-center gap-2">
+                      <span class="text-amber-400">🛡️</span>
+                      <span>{gear}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <!-- Recommended Artifacts -->
+              <div class="bg-slate-950/70 border border-slate-800/80 rounded-xl p-4">
+                <h4 class="text-xs uppercase font-bold text-slate-400 mb-2">Best Artifacts</h4>
+                <ul class="space-y-1.5 text-xs text-slate-200">
+                  {build.recommendedArtifacts.map((art) => (
+                    <li class="flex items-center gap-2">
+                      <span class="text-amber-400">✨</span>
+                      <span>{art}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            <div class="text-xs text-slate-400 bg-slate-950/50 p-3 rounded-xl border border-slate-800/80">
+              <strong class="text-slate-300">Tactical Positioning:</strong> {build.notes}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <!-- Synergies & Teammates -->
+    <div class="mb-12">
+      <h2 class="text-xl font-black text-white mb-4 flex items-center gap-2">
+        <span class="w-2.5 h-2.5 rounded-full bg-blue-400"></span>
+        Best Synergy Teammates
+      </h2>
+
+      <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-4">
+        {hero.bestTeammates.map((mateId) => {
+          const mate = getHeroById(mateId);
+          if (!mate) return null;
+          return (
+            <a
+              href={`/heroes/${mate.id}`}
+              class="group bg-slate-900/60 border border-slate-800 hover:border-amber-500/50 rounded-xl p-3 flex flex-col items-center text-center transition-all hover:-translate-y-0.5"
+            >
+              <div class="w-14 h-14 rounded-xl overflow-hidden bg-slate-950 mb-2 border border-slate-800 group-hover:border-amber-500">
+                <img src={mate.avatar} alt={mate.name} class="w-full h-full object-cover" />
+              </div>
+              <span class="text-xs font-bold text-white group-hover:text-amber-400 transition-colors">
+                {mate.name}
+              </span>
+              <span class="text-[10px] text-slate-400 capitalize">{mate.role}</span>
+            </a>
+          );
+        })}
+      </div>
+    </div>
+
+    <!-- Featured Meta Lineups with this Hero -->
+    {relatedLineups.length > 0 && (
+      <div>
+        <h2 class="text-xl font-black text-white mb-4 flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-purple-400"></span>
+          Meta Lineups Featuring {hero.name}
+        </h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {relatedLineups.map((lineup) => (
+            <div class="bg-slate-900/70 border border-slate-800 rounded-xl p-4 flex flex-col justify-between">
+              <div>
+                <div class="flex items-center gap-2 mb-1">
+                  <span class="px-1.5 py-0.5 rounded text-[10px] font-black uppercase bg-amber-500 text-slate-950">
+                    {lineup.tier} Tier
+                  </span>
+                  <span class="text-xs text-slate-400 uppercase font-semibold">
+                    {lineup.gameMode.replace('_', ' ')}
+                  </span>
+                </div>
+                <h4 class="text-sm font-bold text-white">{lineup.name}</h4>
+                <p class="text-xs text-slate-400 mt-1 line-clamp-2">{lineup.description}</p>
+              </div>
+              <a
+                href={`/lineups#${lineup.id}`}
+                class="mt-3 text-xs font-semibold text-amber-400 hover:underline inline-flex items-center gap-1"
+              >
+                View Full Lineup Strategy &rarr;
+              </a>
+            </div>
+          ))}
+        </div>
+      </div>
+    )}
+  </div>
+</Layout>
+
