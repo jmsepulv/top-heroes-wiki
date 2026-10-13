@@ -64,6 +64,14 @@ const isActive = (path: string) => {
         Heroes
       </a>
       <a
+        href={getPath('/compare')}
+        class={`px-2.5 py-1.5 rounded-lg text-sm font-medium transition-all ${
+          isActive('/compare') ? 'text-amber-400 bg-amber-500/10 border border-amber-500/30' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
+        }`}
+      >
+        Compare
+      </a>
+      <a
         href={getPath('/lineups')}
         class={`px-2.5 py-1.5 rounded-lg text-sm font-medium transition-all ${
           isActive('/lineups') ? 'text-white bg-slate-800 shadow-sm' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'

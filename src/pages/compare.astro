@@ -1,0 +1,13 @@
+---
+import Layout from '../layouts/Layout.astro';
+import HeroComparer from '../components/HeroComparer';
+---
+
+<Layout
+  title="Hero Comparison Matrix | Top Heroes Interactive Guide"
+  description="Compare Top Heroes champions side-by-side. Analyze base HP, ATK, DEF, and SPD attributes, skill kits, PvP/PvE tier rankings, and optimal gear combinations."
+>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+    <HeroComparer client:load />
+  </div>
+</Layout>
