@@ -115,6 +115,15 @@ const TOOLS_ITEMS: SearchResultItem[] = [
     badgeColor: 'bg-red-500/20 text-red-400 border-red-500/30',
     href: '/changelog',
   },
+  {
+    id: 'tool_pwa_install',
+    category: 'tools',
+    title: 'Install Progressive Web App (PWA)',
+    subtitle: 'Add Top Heroes to your home screen or desktop for full-screen offline access',
+    badge: 'PWA',
+    badgeColor: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
+    href: '/#install',
+  },
 ];
 
 export default function CommandPalette() {
@@ -310,6 +319,10 @@ export default function CommandPalette() {
 
   const navigateToItem = (item: SearchResultItem) => {
     setIsOpen(false);
+    if (item.id === 'tool_pwa_install') {
+      window.dispatchEvent(new CustomEvent('open-pwa-install'));
+      return;
+    }
     window.location.href = getPath(item.href);
   };
 

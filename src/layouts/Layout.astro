@@ -2,6 +2,8 @@
 import '../styles/global.css';
 import Navbar from '../components/Navbar.astro';
 import Footer from '../components/Footer.astro';
+import InstallPwaPrompt from '../components/InstallPwaPrompt';
+import { getPath } from '../utils/paths';
 
 interface Props {
   title?: string;
@@ -19,13 +21,21 @@ const {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href={getPath('/icons/icon.svg')} />
+    <link rel="manifest" href={getPath('/manifest.webmanifest')} />
+    <meta name="theme-color" content="#0f172a" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Top Heroes" />
+    <link rel="apple-touch-icon" href={getPath('/icons/apple-touch-icon.png')} />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
     <meta name="description" content={description} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
+    <meta property="og:image" content={getPath('/icons/icon-512.png')} />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -45,5 +55,20 @@ const {
     </main>
 
     <Footer />
+
+    <InstallPwaPrompt client:load />
+
+    <!-- Service Worker Registration for PWA Offline Caching -->
+    <script is:inline define:vars={{ swUrl: getPath('/sw.js') }}>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register(swUrl).then((reg) => {
+            console.log('Top Heroes PWA Service Worker active:', reg.scope);
+          }).catch((err) => {
+            console.warn('Top Heroes PWA Service Worker registration error:', err);
+          });
+        });
+      }
+    </script>
   </body>
 </html>
