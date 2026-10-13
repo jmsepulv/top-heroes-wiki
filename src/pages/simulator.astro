@@ -1,0 +1,13 @@
+---
+import Layout from '../layouts/Layout.astro';
+import DamageSimulator from '../components/DamageSimulator';
+---
+
+<Layout
+  title="Combat & Battle Damage Simulator | Top Heroes Interactive Guide"
+  description="Interactive Top Heroes combat damage engine. Model physical and magical defense mitigation curves, the +20% Faction Triangle advantage, critical strike multipliers, and time-to-kill."
+>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+    <DamageSimulator client:load />
+  </div>
+</Layout>

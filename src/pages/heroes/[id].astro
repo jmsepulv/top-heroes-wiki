@@ -125,6 +125,12 @@ const getFactionBadge = (factionId: string) => {
               Armory Build
             </a>
             <a
+              href={getPath(`/simulator?attacker=${hero.id}`)}
+              class="bg-red-500/10 hover:bg-red-500/20 text-red-300 border border-red-500/30 font-semibold px-4 py-2 rounded-xl text-xs transition-colors"
+            >
+              Simulate Damage
+            </a>
+            <a
               href="#builds"
               class="bg-slate-800 hover:bg-slate-700 text-white font-semibold px-4 py-2 rounded-xl text-xs transition-colors"
             >

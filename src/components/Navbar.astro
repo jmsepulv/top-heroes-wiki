@@ -73,6 +73,14 @@ const isActive = (path: string) => {
         Compare
       </a>
       <a
+        href={getPath('/simulator')}
+        class={`px-2.5 py-1.5 rounded-lg text-sm font-medium transition-all ${
+          isActive('/simulator') ? 'text-red-400 bg-red-500/10 border border-red-500/30' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
+        }`}
+      >
+        Simulator
+      </a>
+      <a
         href={getPath('/lineups')}
         class={`px-2.5 py-1.5 rounded-lg text-sm font-medium transition-all ${
           isActive('/lineups') ? 'text-white bg-slate-800 shadow-sm' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'

@@ -53,6 +53,15 @@ const TOOLS_ITEMS: SearchResultItem[] = [
     href: '/compare',
   },
   {
+    id: 'tool_simulator',
+    category: 'tools',
+    title: 'Combat & Battle Damage Simulator',
+    subtitle: 'Model physical vs magic DEF mitigation curves, crit scaling, and the +20% Faction Triangle advantage',
+    badge: 'Combat',
+    badgeColor: 'bg-red-500/20 text-red-400 border-red-500/30',
+    href: '/simulator',
+  },
+  {
     id: 'tool_roster',
     category: 'tools',
     title: 'Interactive Roster Builder',

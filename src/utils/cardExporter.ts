@@ -354,3 +354,4 @@ export async function copyFormationCardToClipboard(data: FormationCardData): Pro
     return false;
   }
 }
+
