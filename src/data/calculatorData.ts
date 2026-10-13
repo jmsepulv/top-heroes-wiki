@@ -72,3 +72,4 @@ export const CASTLE_DATA: CastleLevelRequirement[] = [
   { level: 25, meat: 16000000, wood: 16000000, stone: 9500000, iron: 5200000, baseTimeHours: 192, prerequisite: 'Wall Lv.24, Embassy Lv.24', keyUnlocks: 'Tier 3 Soldiers, March Cap +30%' },
   { level: 30, meat: 65000000, wood: 65000000, stone: 42000000, iron: 25000000, baseTimeHours: 480, prerequisite: 'Wall Lv.29, Hall of War Lv.29', keyUnlocks: 'Queue 4 Unlocked, Mythic Resonance Cap' },
 ];
+

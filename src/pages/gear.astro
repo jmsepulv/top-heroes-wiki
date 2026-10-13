@@ -1,0 +1,13 @@
+---
+import Layout from '../layouts/Layout.astro';
+import GearBuilder from '../components/GearBuilder';
+---
+
+<Layout
+  title="Top Heroes Interactive Gear & Artifact Optimizer | Armory Simulator"
+  description="Test 2-piece and 4-piece equipment set bonuses, equip Mythic artifacts, and calculate final stat scaling for every hero in Top Heroes."
+>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+    <GearBuilder client:load />
+  </div>
+</Layout>

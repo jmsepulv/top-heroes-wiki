@@ -72,6 +72,14 @@ const isActive = (path: string) => {
         Lineups
       </a>
       <a
+        href={getPath('/gear')}
+        class={`px-2.5 py-1.5 rounded-lg text-sm font-medium transition-all ${
+          isActive('/gear') ? 'text-purple-400 bg-purple-500/10 border border-purple-500/30' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
+        }`}
+      >
+        Gear
+      </a>
+      <a
         href={getPath('/events')}
         class={`px-2.5 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 ${
           isActive('/events') ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/30' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
