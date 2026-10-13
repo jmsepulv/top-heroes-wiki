@@ -62,6 +62,15 @@ const TOOLS_ITEMS: SearchResultItem[] = [
     href: '/simulator',
   },
   {
+    id: 'tool_boss_benchmark',
+    category: 'tools',
+    title: 'Guild Boss 60s DPS Benchmark Engine',
+    subtitle: 'Simulate 6-hero continuous raid battles with armor shred decay, ultimate energy cycles, and DPS meters',
+    badge: 'Boss Raid',
+    badgeColor: 'bg-purple-500/20 text-purple-400 border-purple-500/30',
+    href: '/simulator?mode=boss',
+  },
+  {
     id: 'tool_roster',
     category: 'tools',
     title: 'Interactive Roster Builder',

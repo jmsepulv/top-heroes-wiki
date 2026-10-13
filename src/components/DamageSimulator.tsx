@@ -15,8 +15,10 @@ import {
   Trophy,
   CheckCircle2,
   Sliders,
-  ChevronDown
+  ChevronDown,
+  Skull
 } from 'lucide-react';
+import GuildBossBenchmark from './GuildBossBenchmark';
 
 // Faction Triangle Advantage (+20% dealt, -20% received)
 // League beats Nature, Nature beats Horde, Horde beats League
@@ -90,6 +92,7 @@ const PRESETS: MatchupPreset[] = [
 ];
 
 export default function DamageSimulator() {
+  const [activeMode, setActiveMode] = useState<'duel' | 'boss_benchmark'>('duel');
   const [attackerId, setAttackerId] = useState<string>('pyromancer');
   const [defenderId, setDefenderId] = useState<string>('paragon');
 
@@ -116,6 +119,8 @@ export default function DamageSimulator() {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
+      const mode = params.get('mode');
+      if (mode === 'boss' || mode === 'guild_boss') setActiveMode('boss_benchmark');
       const att = params.get('attacker');
       const def = params.get('defender');
       if (att && HEROES.some((h) => h.id === att)) setAttackerId(att);
@@ -245,8 +250,42 @@ export default function DamageSimulator() {
 
   return (
     <div className="space-y-8">
-      {/* Header Banner */}
-      <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 md:p-8 backdrop-blur-md shadow-2xl space-y-4">
+      {/* Mode Switcher Tabs */}
+      <div className="flex flex-wrap items-center gap-3 border-b border-slate-800 pb-4">
+        <button
+          onClick={() => setActiveMode('duel')}
+          className={`px-5 py-3 rounded-2xl font-bold text-xs flex items-center gap-2 transition-all ${
+            activeMode === 'duel'
+              ? 'bg-red-500/20 text-red-400 border border-red-500/50 shadow-lg shadow-red-500/10'
+              : 'text-slate-400 hover:text-white bg-slate-900/60 border border-slate-800/80 hover:bg-slate-800'
+          }`}
+        >
+          <Swords className="w-4 h-4" />
+          <span>PvP & Duel Damage Calculator</span>
+        </button>
+
+        <button
+          onClick={() => setActiveMode('boss_benchmark')}
+          className={`px-5 py-3 rounded-2xl font-bold text-xs flex items-center gap-2 transition-all ${
+            activeMode === 'boss_benchmark'
+              ? 'bg-purple-500/20 text-purple-300 border border-purple-500/50 shadow-lg shadow-purple-500/10'
+              : 'text-slate-400 hover:text-white bg-slate-900/60 border border-slate-800/80 hover:bg-slate-800'
+          }`}
+        >
+          <Skull className="w-4 h-4 text-purple-400" />
+          <span>Guild Boss 60s DPS Benchmark</span>
+          <span className="px-2 py-0.5 rounded-full text-[9px] bg-amber-500/20 text-amber-300 border border-amber-500/30 font-extrabold uppercase tracking-wide">
+            PvE Engine
+          </span>
+        </button>
+      </div>
+
+      {activeMode === 'boss_benchmark' ? (
+        <GuildBossBenchmark />
+      ) : (
+        <>
+          {/* Header Banner */}
+          <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 md:p-8 backdrop-blur-md shadow-2xl space-y-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-red-500/10 text-red-400 border border-red-500/30 mb-2">
@@ -733,6 +772,8 @@ export default function DamageSimulator() {
           </div>
         </div>
       </div>
+        </>
+      )}
     </div>
   );
 }
