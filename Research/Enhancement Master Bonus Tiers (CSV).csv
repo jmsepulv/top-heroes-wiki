@@ -1,0 +1,19 @@
+system,rarity,enhancement_level,gear_star,gear_attack_value,gear_attack_unit,gear_hp_value,gear_hp_unit,source_url
+flat ladder,Rare,10,,700,flat,7000,flat,https://topheroes1.fandom.com/wiki/Gear
+flat ladder,Epic,10,,1900,flat,19000,flat,https://topheroes1.fandom.com/wiki/Gear
+flat ladder,Epic,20,,3000,flat,32000,flat,https://topheroes1.fandom.com/wiki/Gear
+flat ladder,Epic,30,,4100,flat,47000,flat,https://topheroes1.fandom.com/wiki/Gear
+flat ladder,Legendary,10,,5600,flat,69000,flat,https://topheroes1.fandom.com/wiki/Gear
+flat ladder,Legendary,20,,7000,flat,94000,flat,https://topheroes1.fandom.com/wiki/Gear
+flat ladder,Legendary,30,,8900,flat,128000,flat,https://topheroes1.fandom.com/wiki/Gear
+flat ladder,Legendary,40,,11100,flat,171000,flat,https://topheroes1.fandom.com/wiki/Gear
+flat ladder,Legendary,,1,14800,flat,250000,flat,https://topheroes1.fandom.com/wiki/Gear
+flat ladder,Legendary,,2,18500,flat,340000,flat,https://topheroes1.fandom.com/wiki/Gear
+flat ladder,Legendary,,3,22200,flat,441000,flat,https://topheroes1.fandom.com/wiki/Gear
+flat ladder,Legendary,,4,33400,flat,712000,flat,https://topheroes1.fandom.com/wiki/Gear
+flat ladder,Mythic,,,44500,flat,949000,flat,https://topheroes1.fandom.com/wiki/Gear
+percent ladder,any,10,,10,percent,10,percent,https://w.atwiki.jp/topheroesjp/pages/18.html
+percent ladder,any,20,,25,percent,25,percent,https://w.atwiki.jp/topheroesjp/pages/18.html
+percent ladder,any,30,,50,percent,50,percent,https://w.atwiki.jp/topheroesjp/pages/18.html
+percent ladder,any,40,,100,percent,100,percent,https://w.atwiki.jp/topheroesjp/pages/18.html
+percent ladder,any,50,,200,percent,200,percent,https://w.atwiki.jp/topheroesjp/pages/18.html

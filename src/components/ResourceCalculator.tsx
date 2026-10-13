@@ -1,24 +1,43 @@
 import React, { useState, useMemo } from 'react';
-import { LEVEL_MILESTONES, STAR_TIERS, CASTLE_DATA } from '../data/calculatorData';
-import { Calculator, Sparkles, Shield, Castle, Zap, ChevronRight, Award } from 'lucide-react';
+import {
+  LEVEL_MILESTONES,
+  CASTLE_DATA,
+  STAR_PROMOTION_SCHEDULE,
+  TOTAL_SHARDS_BY_RARITY,
+  AWAKENING_COSTS,
+  TOTAL_AWAKENING_COST,
+  TRAIT_ROTATION_STEPS,
+  TRAIT_RULES,
+  EPIC_GLOBAL_PASSIVES,
+} from '../data/calculatorData';
+import { Calculator, Sparkles, Shield, Castle, Zap, Award, Star, BookOpen, Crown, Layers } from 'lucide-react';
 
 export default function ResourceCalculator() {
-  const [activeTab, setActiveTab] = useState<'level' | 'stars' | 'castle'>('level');
+  const [activeTab, setActiveTab] = useState<'level' | 'stars' | 'awakening' | 'traits' | 'passives' | 'castle'>('stars');
 
   // Hero Level Calculator State
   const [startLevel, setStartLevel] = useState<number>(1);
   const [targetLevel, setTargetLevel] = useState<number>(100);
 
-  // Star Calculator State
-  const [rarity, setRarity] = useState<'mythic' | 'legendary' | 'epic'>('mythic');
-  const [currentStars, setCurrentStars] = useState<number>(0);
-  const [targetStars, setTargetStars] = useState<number>(5);
+  // Star Calculator State (15-star / 3-band verified model)
+  const [starRarity, setStarRarity] = useState<'mythic' | 'legendary' | 'epic'>('mythic');
+  const [currentStar, setCurrentStar] = useState<number>(0); // 0 to 15
+  const [targetStar, setTargetStar] = useState<number>(15); // 1 to 15
+
+  // Awakening Calculator State (Legendary heroes: tiers 0-3, 345 shards + 9 soul stones)
+  const [startAwakeningIndex, setStartAwakeningIndex] = useState<number>(0);
+  const [targetAwakeningIndex, setTargetAwakeningIndex] = useState<number>(AWAKENING_COSTS.length);
+
+  // Trait Calculator State (4 traits, lv 1 to 30, 1160 shards total)
+  const [traitStartLevel, setTraitStartLevel] = useState<number>(1);
+  const [traitTargetLevel, setTraitTargetLevel] = useState<number>(30);
+  const [activeTraitsCount, setActiveTraitsCount] = useState<number>(4);
 
   // Castle Calculator State
   const [currentCastle, setCurrentCastle] = useState<number>(10);
   const [targetCastle, setTargetCastle] = useState<number>(25);
 
-  // Calculations: Hero Level
+  // 1. Calculations: Hero Level
   const levelCosts = useMemo(() => {
     let totalStones = 0;
     let totalMeat = 0;
@@ -35,23 +54,56 @@ export default function ResourceCalculator() {
     return { totalStones, totalMeat, totalXp };
   }, [startLevel, targetLevel]);
 
-  // Calculations: Stars
+  // 2. Calculations: 15-Star Promotion
   const starCosts = useMemo(() => {
-    const tierList = STAR_TIERS[rarity] || [];
     let totalShards = 0;
-    const unlockedBonuses: string[] = [];
+    const stepsIncluded = STAR_PROMOTION_SCHEDULE.filter(
+      (s) => s.globalStar > currentStar && s.globalStar <= targetStar
+    );
 
-    tierList.forEach((t) => {
-      if (t.stars > currentStars && t.stars <= targetStars) {
-        totalShards += t.shardsRequired;
-        unlockedBonuses.push(`${t.stars}★: ${t.statBonus}`);
-      }
+    stepsIncluded.forEach((s) => {
+      if (starRarity === 'mythic') totalShards += s.mythicShards;
+      else if (starRarity === 'legendary') totalShards += s.legendaryShards;
+      else totalShards += s.epicShards;
     });
 
-    return { totalShards, unlockedBonuses };
-  }, [rarity, currentStars, targetStars]);
+    const unlocks: string[] = [];
+    if (currentStar < 5 && targetStar >= 5) unlocks.push('Band 1 Complete (5 Gold Stars)');
+    if (currentStar < 10 && targetStar >= 10) unlocks.push('Band 2 Complete (5 Silver Stars)');
+    if (currentStar < 12 && targetStar >= 12) unlocks.push('2-Star Platinum (12 Stars) — Unlocks Epic Global Passives (+30% Accounts Buffs)');
+    if (currentStar < 15 && targetStar >= 15) unlocks.push('Band 3 Complete (5 Platinum / Rainbow Stars) — Fully Maxed Star Promotion');
 
-  // Calculations: Castle
+    return { totalShards, stepsIncluded, unlocks };
+  }, [starRarity, currentStar, targetStar]);
+
+  // 3. Calculations: Awakening
+  const awakeningCosts = useMemo(() => {
+    let shards = 0;
+    let soulStones = 0;
+
+    for (let i = startAwakeningIndex; i < targetAwakeningIndex; i++) {
+      const step = AWAKENING_COSTS[i];
+      if (step) {
+        shards += step.shards;
+        soulStones += step.soulStones;
+      }
+    }
+
+    return { shards, soulStones };
+  }, [startAwakeningIndex, targetAwakeningIndex]);
+
+  // 4. Calculations: Traits
+  const traitCosts = useMemo(() => {
+    // Shards needed per trait from traitStartLevel to traitTargetLevel
+    const levelsToGain = Math.max(0, traitTargetLevel - Math.max(1, traitStartLevel));
+    const shardsPerTrait = levelsToGain * TRAIT_RULES.upgradeCostPerLevel;
+    const totalShards = shardsPerTrait * activeTraitsCount;
+    const diamondUnlockNeeded = traitStartLevel === 0;
+
+    return { levelsToGain, shardsPerTrait, totalShards, diamondUnlockNeeded };
+  }, [traitStartLevel, traitTargetLevel, activeTraitsCount]);
+
+  // 5. Calculations: Castle
   const castleCosts = useMemo(() => {
     let meat = 0;
     let wood = 0;
@@ -87,59 +139,530 @@ export default function ResourceCalculator() {
           <div>
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-500/10 text-amber-400 border border-amber-500/30 mb-2">
               <Calculator className="w-3.5 h-3.5" />
-              Resource & Progression Engine
+              Verified Progression Engines & Calculators
             </div>
             <h1 className="text-3xl md:text-4xl font-black text-white">
               Top Heroes Resource Calculators
             </h1>
             <p className="text-sm text-slate-400 mt-1 max-w-2xl leading-relaxed">
-              Accurately estimate costs before investing. Compute Promotion Stones for hero breakpoints, shard requirements for star awakenings, and building resources for Castle milestones.
+              Plan your investments with exact mathematical precision. Compute 15-star shard milestones (500/1,000 shards), Legendary awakening costs (345 shards & 9 soul stones), trait rotation locks (1,160 shards), and Castle construction costs.
             </p>
           </div>
 
           {/* Calculator Tabs */}
-          <div className="flex bg-slate-950 p-1.5 rounded-2xl border border-slate-800 shrink-0">
-            <button
-              onClick={() => setActiveTab('level')}
-              className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
-                activeTab === 'level'
-                  ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              <Zap className="w-4 h-4" />
-              <span>Hero Level & Stones</span>
-            </button>
+          <div className="flex flex-wrap bg-slate-950 p-1.5 rounded-2xl border border-slate-800 shrink-0 gap-1">
             <button
               onClick={() => setActiveTab('stars')}
-              className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+              className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
                 activeTab === 'stars'
                   ? 'bg-purple-600 text-white shadow-md shadow-purple-500/20'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
-              <Award className="w-4 h-4" />
-              <span>Star & Shards</span>
+              <Star className="w-3.5 h-3.5" />
+              <span>15-Star Shards</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('awakening')}
+              className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                activeTab === 'awakening'
+                  ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              <Crown className="w-3.5 h-3.5" />
+              <span>Awakening</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('traits')}
+              className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                activeTab === 'traits'
+                  ? 'bg-emerald-600 text-white shadow-md shadow-emerald-500/20'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              <Layers className="w-3.5 h-3.5" />
+              <span>Traits & Rotation</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('passives')}
+              className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                activeTab === 'passives'
+                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Epic Passives</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('level')}
+              className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                activeTab === 'level'
+                  ? 'bg-amber-600 text-white shadow-md shadow-amber-500/20'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              <Zap className="w-3.5 h-3.5" />
+              <span>Hero Level</span>
             </button>
             <button
               onClick={() => setActiveTab('castle')}
-              className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+              className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
                 activeTab === 'castle'
                   ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
-              <Castle className="w-4 h-4" />
+              <Castle className="w-3.5 h-3.5" />
               <span>Castle Rush</span>
             </button>
           </div>
         </div>
       </div>
 
-      {/* Tab 1: Hero Level & Promotion Stones Calculator */}
-      {activeTab === 'level' && (
+      {/* Tab: 15-Star Promotion Shard Calculator */}
+      {activeTab === 'stars' && (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Controls (5 cols) */}
+          <div className="lg:col-span-5 bg-slate-900/80 border border-slate-800 rounded-3xl p-6 md:p-8 backdrop-blur-md space-y-6">
+            <h2 className="text-xl font-black text-white flex items-center gap-2">
+              <Star className="w-5 h-5 text-purple-400" />
+              Star Promotion Shard Engine
+            </h2>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-300 uppercase mb-2">
+                  Hero Rarity:
+                </label>
+                <div className="grid grid-cols-3 gap-2">
+                  <button
+                    onClick={() => setStarRarity('mythic')}
+                    className={`py-2 rounded-xl text-xs font-bold transition-all ${
+                      starRarity === 'mythic' ? 'bg-red-600 text-white shadow-md' : 'bg-slate-950 text-slate-400 hover:text-white border border-slate-800'
+                    }`}
+                  >
+                    Mythic (1,000 Shards)
+                  </button>
+                  <button
+                    onClick={() => setStarRarity('legendary')}
+                    className={`py-2 rounded-xl text-xs font-bold transition-all ${
+                      starRarity === 'legendary' ? 'bg-amber-600 text-white shadow-md' : 'bg-slate-950 text-slate-400 hover:text-white border border-slate-800'
+                    }`}
+                  >
+                    Legendary (500 Shards)
+                  </button>
+                  <button
+                    onClick={() => setStarRarity('epic')}
+                    className={`py-2 rounded-xl text-xs font-bold transition-all ${
+                      starRarity === 'epic' ? 'bg-purple-600 text-white shadow-md' : 'bg-slate-950 text-slate-400 hover:text-white border border-slate-800'
+                    }`}
+                  >
+                    Epic (500 Shards)
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-300 uppercase mb-2">
+                  Current Star Level: <span className="text-amber-400 font-bold">{currentStar === 0 ? '0★ (Unstarred)' : `${currentStar}★ (${STAR_PROMOTION_SCHEDULE[currentStar - 1]?.bandName})`}</span>
+                </label>
+                <select
+                  value={currentStar}
+                  onChange={(e) => setCurrentStar(Number(e.target.value))}
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-purple-500"
+                >
+                  <option value={0}>0★ (Newly Summoned)</option>
+                  {STAR_PROMOTION_SCHEDULE.map((s) => (
+                    <option key={s.globalStar} value={s.globalStar}>
+                      {s.globalStar}★ Star — {s.bandName} {s.star}★
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-300 uppercase mb-2">
+                  Target Star Level: <span className="text-purple-400 font-bold">{targetStar}★ ({STAR_PROMOTION_SCHEDULE[targetStar - 1]?.bandName})</span>
+                </label>
+                <select
+                  value={targetStar}
+                  onChange={(e) => setTargetStar(Number(e.target.value))}
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-purple-500"
+                >
+                  {STAR_PROMOTION_SCHEDULE.map((s) => (
+                    <option key={s.globalStar} value={s.globalStar}>
+                      {s.globalStar}★ Star — {s.bandName} {s.star}★
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-slate-950/70 border border-slate-800 text-xs text-slate-400 leading-relaxed space-y-2">
+              <div>
+                ⭐ <strong>Band Breakdown:</strong> Band 1 (Stars 1-5, Gold) costs 50 shards (100 for Mythic). Band 2 (Stars 6-10, Silver) costs 150 shards (300 for Mythic). Band 3 (Stars 11-15, Platinum) costs 300 shards (600 for Mythic).
+              </div>
+              <div>
+                ⭐ <strong>Key Threshold:</strong> 12 Stars (2-Star Platinum) unlocks Epic Heroes' 30% Account-Wide Global Passives!
+              </div>
+            </div>
+          </div>
+
+          {/* Results Summary (7 cols) */}
+          <div className="lg:col-span-7 space-y-6">
+            <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 md:p-8 backdrop-blur-md">
+              <h3 className="text-lg font-black text-white mb-6">
+                Total Shard Investment Required
+              </h3>
+
+              <div className="bg-slate-950 p-6 rounded-2xl border border-purple-500/40 text-center mb-6">
+                <div className="text-xs uppercase font-bold text-slate-400 mb-1">
+                  Specific {starRarity.toUpperCase()} Shards Needed
+                </div>
+                <div className="text-4xl font-black text-purple-400 font-mono">
+                  {starCosts.totalShards.toLocaleString()}
+                </div>
+                <div className="text-xs text-purple-300 font-semibold mt-1">
+                  Required from {currentStar}★ &rarr; {targetStar}★ (Total Rarity Cap: {TOTAL_SHARDS_BY_RARITY[starRarity]} shards)
+                </div>
+              </div>
+
+              {/* Milestone Unlocks */}
+              {starCosts.unlocks.length > 0 && (
+                <div className="mb-6 space-y-2">
+                  <h4 className="text-xs uppercase font-bold text-slate-400 tracking-wider">
+                    Milestones Passed:
+                  </h4>
+                  {starCosts.unlocks.map((u, i) => (
+                    <div key={i} className="p-2.5 rounded-xl bg-purple-950/30 border border-purple-500/30 text-xs text-purple-300 flex items-center gap-2">
+                      <Sparkles className="w-3.5 h-3.5 text-purple-400 shrink-0" />
+                      <span>{u}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Step Breakdown Table */}
+              <h4 className="text-xs uppercase font-bold text-slate-400 tracking-wider mb-3">
+                Star Step Cost Breakdown:
+              </h4>
+              <div className="overflow-x-auto max-h-72 overflow-y-auto pr-1">
+                <table className="w-full text-xs text-left text-slate-300">
+                  <thead className="bg-slate-950 text-slate-400 uppercase font-semibold sticky top-0">
+                    <tr>
+                      <th className="p-2.5 rounded-l-lg">Global Star</th>
+                      <th className="p-2.5">Band</th>
+                      <th className="p-2.5">Shards per Star</th>
+                      <th className="p-2.5 rounded-r-lg">Cumulative Total</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-800">
+                    {starCosts.stepsIncluded.map((s) => {
+                      const cost = starRarity === 'mythic' ? s.mythicShards : starRarity === 'legendary' ? s.legendaryShards : s.epicShards;
+                      const cum = starRarity === 'mythic' ? s.mythicCumulative : starRarity === 'legendary' ? s.legendaryCumulative : s.epicCumulative;
+                      return (
+                        <tr key={s.globalStar} className="hover:bg-slate-800/40">
+                          <td className="p-2.5 font-bold text-white">{s.globalStar}★</td>
+                          <td className="p-2.5 text-slate-400">{s.bandName} (★{s.star})</td>
+                          <td className="p-2.5 text-purple-400 font-mono font-bold">+{cost} shards</td>
+                          <td className="p-2.5 text-slate-300 font-mono">{cum} shards</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Tab: Awakening Calculator */}
+      {activeTab === 'awakening' && (
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          <div className="lg:col-span-5 bg-slate-900/80 border border-slate-800 rounded-3xl p-6 md:p-8 backdrop-blur-md space-y-6">
+            <h2 className="text-xl font-black text-white flex items-center gap-2">
+              <Crown className="w-5 h-5 text-amber-400" />
+              Legendary Hero Awakening Costs
+            </h2>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-300 uppercase mb-2">
+                  Current Awakening Step:
+                </label>
+                <select
+                  value={startAwakeningIndex}
+                  onChange={(e) => setStartAwakeningIndex(Number(e.target.value))}
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500"
+                >
+                  <option value={0}>Unawakened (Base)</option>
+                  {AWAKENING_COSTS.map((step, idx) => (
+                    <option key={idx} value={idx + 1}>
+                      Tier {step.tier} - Level {step.level}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-300 uppercase mb-2">
+                  Target Awakening Step:
+                </label>
+                <select
+                  value={targetAwakeningIndex}
+                  onChange={(e) => setTargetAwakeningIndex(Number(e.target.value))}
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500"
+                >
+                  {AWAKENING_COSTS.map((step, idx) => (
+                    <option key={idx} value={idx + 1}>
+                      Tier {step.tier} - Level {step.level} {step.soulStones > 0 ? `(${step.soulStones} Soul Stones)` : ''}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-slate-950/70 border border-slate-800 text-xs text-slate-400 leading-relaxed space-y-2">
+              <div>
+                👑 <strong>Grand Totals:</strong> Fully maxing Awakening for a Legendary hero requires exactly <strong>{TOTAL_AWAKENING_COST.shards} Shards</strong> and <strong>{TOTAL_AWAKENING_COST.soulStones} Soul Stones</strong>.
+              </div>
+              <div>
+                👑 <strong>Soul Stone Transitions:</strong> Tier 0 unlock requires 1 Soul Stone, Tier 1 cap requires 2, Tier 2 cap requires 2, and Tier 3 cap requires 4.
+              </div>
+            </div>
+          </div>
+
+          <div className="lg:col-span-7 space-y-6">
+            <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 md:p-8 backdrop-blur-md">
+              <h3 className="text-lg font-black text-white mb-6">Required Awakening Resources</h3>
+
+              <div className="grid grid-cols-2 gap-4 mb-6">
+                <div className="bg-slate-950 p-6 rounded-2xl border border-amber-500/40 text-center">
+                  <div className="text-xs uppercase font-bold text-slate-400 mb-1">Hero Shards</div>
+                  <div className="text-4xl font-black text-amber-400 font-mono">
+                    {awakeningCosts.shards}
+                  </div>
+                  <div className="text-xs text-amber-300/80 mt-1">Total Shards</div>
+                </div>
+
+                <div className="bg-slate-950 p-6 rounded-2xl border border-purple-500/40 text-center">
+                  <div className="text-xs uppercase font-bold text-slate-400 mb-1">Soul Stones</div>
+                  <div className="text-4xl font-black text-purple-400 font-mono">
+                    {awakeningCosts.soulStones}
+                  </div>
+                  <div className="text-xs text-purple-300/80 mt-1">Tier Transition Stones</div>
+                </div>
+              </div>
+
+              <h4 className="text-xs uppercase font-bold text-slate-400 tracking-wider mb-3">
+                Full Step Schedule:
+              </h4>
+              <div className="overflow-x-auto max-h-72 overflow-y-auto pr-1">
+                <table className="w-full text-xs text-left text-slate-300">
+                  <thead className="bg-slate-950 text-slate-400 uppercase font-semibold sticky top-0">
+                    <tr>
+                      <th className="p-2.5 rounded-l-lg">Tier</th>
+                      <th className="p-2.5">Level</th>
+                      <th className="p-2.5">Shards</th>
+                      <th className="p-2.5 rounded-r-lg">Soul Stones</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-800">
+                    {AWAKENING_COSTS.map((c, i) => (
+                      <tr key={i} className={`hover:bg-slate-800/40 ${i >= startAwakeningIndex && i < targetAwakeningIndex ? 'bg-amber-500/5 font-semibold text-white' : 'text-slate-500'}`}>
+                        <td className="p-2.5">Tier {c.tier}</td>
+                        <td className="p-2.5">Lv {c.level}</td>
+                        <td className="p-2.5 font-mono">{c.shards}</td>
+                        <td className="p-2.5 font-mono text-purple-400">{c.soulStones > 0 ? `${c.soulStones} 💎` : '—'}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Tab: Traits & 5-Level Rotation */}
+      {activeTab === 'traits' && (
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          <div className="lg:col-span-5 bg-slate-900/80 border border-slate-800 rounded-3xl p-6 md:p-8 backdrop-blur-md space-y-6">
+            <h2 className="text-xl font-black text-white flex items-center gap-2">
+              <Layers className="w-5 h-5 text-emerald-400" />
+              Hero Trait Progression Engine
+            </h2>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-300 uppercase mb-2">
+                  Number of Traits Being Upgraded:
+                </label>
+                <div className="grid grid-cols-4 gap-2">
+                  {[1, 2, 3, 4].map((cnt) => (
+                    <button
+                      key={cnt}
+                      onClick={() => setActiveTraitsCount(cnt)}
+                      className={`py-2 rounded-xl text-xs font-bold transition-all ${
+                        activeTraitsCount === cnt
+                          ? 'bg-emerald-600 text-white shadow-md'
+                          : 'bg-slate-950 text-slate-400 hover:text-white border border-slate-800'
+                      }`}
+                    >
+                      {cnt} {cnt === 4 ? '(All Traits)' : 'Trait'}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-300 uppercase mb-2">
+                  Current Trait Level: <span className="text-amber-400 font-bold">Lv {traitStartLevel}</span>
+                </label>
+                <select
+                  value={traitStartLevel}
+                  onChange={(e) => setTraitStartLevel(Number(e.target.value))}
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500"
+                >
+                  <option value={0}>Locked (Level 0)</option>
+                  <option value={1}>Level 1 (Diamond Unlocked)</option>
+                  <option value={5}>Level 5 (Rotation Checkpoint 1)</option>
+                  <option value={10}>Level 10 (Rotation Checkpoint 2)</option>
+                  <option value={15}>Level 15 (Rotation Checkpoint 3)</option>
+                  <option value={20}>Level 20 (Rotation Checkpoint 4)</option>
+                  <option value={25}>Level 25 (Rotation Checkpoint 5)</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-300 uppercase mb-2">
+                  Target Trait Level: <span className="text-emerald-400 font-bold">Lv {traitTargetLevel}</span>
+                </label>
+                <select
+                  value={traitTargetLevel}
+                  onChange={(e) => setTraitTargetLevel(Number(e.target.value))}
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500"
+                >
+                  <option value={5}>Level 5</option>
+                  <option value={10}>Level 10</option>
+                  <option value={15}>Level 15</option>
+                  <option value={20}>Level 20</option>
+                  <option value={25}>Level 25</option>
+                  <option value={30}>Level 30 (Apex Cap)</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-slate-950/70 border border-slate-800 text-xs text-slate-400 leading-relaxed space-y-2">
+              <div>
+                ⚙️ <strong>Costs:</strong> Level 1 is unlocked using Diamonds. Levels 2–30 cost exactly <strong>10 Shards per level</strong> per trait.
+              </div>
+              <div>
+                ⚙️ <strong>Max Cap:</strong> Maxing all 4 traits to Lv 30 requires (29 levels &times; 10 shards &times; 4 traits) = <strong>1,160 Shards</strong>.
+              </div>
+              <div>
+                ⚙️ <strong>Trait Swap:</strong> Swapping active traits between heroes costs <strong>2,000 Diamonds</strong>.
+              </div>
+            </div>
+          </div>
+
+          <div className="lg:col-span-7 space-y-6">
+            <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 md:p-8 backdrop-blur-md">
+              <h3 className="text-lg font-black text-white mb-6">Trait Upgrade Requirements</h3>
+
+              <div className="bg-slate-950 p-6 rounded-2xl border border-emerald-500/40 text-center mb-6">
+                <div className="text-xs uppercase font-bold text-slate-400 mb-1">
+                  Total Shards Required ({activeTraitsCount} Traits from Lv {traitStartLevel} &rarr; Lv {traitTargetLevel})
+                </div>
+                <div className="text-4xl font-black text-emerald-400 font-mono">
+                  {traitCosts.totalShards.toLocaleString()}
+                </div>
+                <div className="text-xs text-emerald-300 font-semibold mt-1">
+                  ({traitCosts.shardsPerTrait} shards per trait)
+                  {traitCosts.diamondUnlockNeeded && ' + Diamonds for Lv 1 unlock'}
+                </div>
+              </div>
+
+              {/* 5-Level Rotation Rules Table */}
+              <h4 className="text-xs uppercase font-bold text-slate-400 tracking-wider mb-3">
+                Mandatory 5-Level Rotation Lock Rules:
+              </h4>
+              <div className="space-y-2.5">
+                {TRAIT_ROTATION_STEPS.map((r) => (
+                  <div key={r.step} className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs flex items-start gap-3">
+                    <span className="font-mono font-bold text-emerald-400 shrink-0 px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/30">
+                      Lv {r.fromLevel}&rarr;{r.toLevel}
+                    </span>
+                    <span className="text-slate-300">{r.requirement}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Tab: Epic Global Passives Hub */}
+      {activeTab === 'passives' && (
+        <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 md:p-8 backdrop-blur-md space-y-6">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-indigo-500/10 text-indigo-400 border border-indigo-500/30 mb-2">
+                <Sparkles className="w-3.5 h-3.5" />
+                Account-Wide Passive Priority List
+              </div>
+              <h2 className="text-2xl font-black text-white">Epic Hero Global Passive Buffs</h2>
+              <p className="text-xs text-slate-400 mt-1 max-w-2xl leading-relaxed">
+                Epic heroes provide permanent account-wide bonuses that apply <strong>even when the hero is not deployed in any march or battle queue</strong>. Unlocks at 2-Star Platinum (12 stars) and reaches +30% maximum at trait level 30.
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {EPIC_GLOBAL_PASSIVES.map((p) => (
+              <div key={p.hero} className="p-5 rounded-2xl bg-slate-950/80 border border-slate-800 hover:border-indigo-500/50 transition-all space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg font-black text-white">{p.hero}</span>
+                    <span className={`text-[10px] font-black uppercase px-1.5 py-0.5 rounded border ${
+                      p.faction === 'League' ? 'text-blue-400 bg-blue-500/10 border-blue-500/30' : 'text-red-400 bg-red-500/10 border-red-500/30'
+                    }`}>
+                      {p.faction}
+                    </span>
+                  </div>
+                  <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full border ${
+                    p.priority === 'HIGHEST' ? 'text-red-400 bg-red-500/10 border-red-500/30' :
+                    p.priority === 'HIGH' ? 'text-amber-400 bg-amber-500/10 border-amber-500/30' :
+                    p.priority === 'MEDIUM' ? 'text-blue-400 bg-blue-500/10 border-blue-500/30' :
+                    'text-slate-400 bg-slate-500/10 border-slate-500/30'
+                  }`}>
+                    {p.priority} Priority
+                  </span>
+                </div>
+
+                <div className="p-3 rounded-xl bg-slate-900 border border-slate-800">
+                  <div className="text-[11px] text-slate-400 uppercase font-semibold">Global Effect</div>
+                  <div className="text-lg font-black text-indigo-400 font-mono mt-0.5">
+                    {p.bonusName}: +{p.maxBonusPct}%
+                  </div>
+                </div>
+
+                <p className="text-xs text-slate-300 leading-relaxed">{p.description}</p>
+                <div className="text-[11px] text-slate-500 border-t border-slate-800/80 pt-2 italic">
+                  💡 {p.notes}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Tab: Hero Level & Promotion Stones Calculator */}
+      {activeTab === 'level' && (
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           <div className="lg:col-span-5 bg-slate-900/80 border border-slate-800 rounded-3xl p-6 md:p-8 backdrop-blur-md space-y-6">
             <h2 className="text-xl font-black text-white flex items-center gap-2">
               <Zap className="w-5 h-5 text-amber-400" />
@@ -196,7 +719,6 @@ export default function ResourceCalculator() {
             </div>
           </div>
 
-          {/* Results Summary (7 cols) */}
           <div className="lg:col-span-7 space-y-6">
             <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 md:p-8 backdrop-blur-md">
               <h3 className="text-lg font-black text-white mb-6">
@@ -229,7 +751,6 @@ export default function ResourceCalculator() {
                 </div>
               </div>
 
-              {/* Milestone Breakdown Table */}
               <h4 className="text-xs uppercase font-bold text-slate-400 tracking-wider mb-3">
                 Breakpoint Breakdown:
               </h4>
@@ -260,229 +781,103 @@ export default function ResourceCalculator() {
         </div>
       )}
 
-      {/* Tab 2: Hero Star & Shard Awakening Calculator */}
-      {activeTab === 'stars' && (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* Controls (5 cols) */}
-          <div className="lg:col-span-5 bg-slate-900/80 border border-slate-800 rounded-3xl p-6 md:p-8 backdrop-blur-md space-y-6">
-            <h2 className="text-xl font-black text-white flex items-center gap-2">
-              <Award className="w-5 h-5 text-purple-400" />
-              Star & Awakening Targets
-            </h2>
-
-            <div className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold text-slate-300 uppercase mb-2">
-                  Hero Rarity:
-                </label>
-                <div className="grid grid-cols-3 gap-2">
-                  <button
-                    onClick={() => setRarity('mythic')}
-                    className={`py-2 rounded-xl text-xs font-bold transition-all ${
-                      rarity === 'mythic' ? 'bg-red-600 text-white shadow-md' : 'bg-slate-950 text-slate-400 hover:text-white'
-                    }`}
-                  >
-                    Mythic
-                  </button>
-                  <button
-                    onClick={() => setRarity('legendary')}
-                    className={`py-2 rounded-xl text-xs font-bold transition-all ${
-                      rarity === 'legendary' ? 'bg-amber-600 text-white shadow-md' : 'bg-slate-950 text-slate-400 hover:text-white'
-                    }`}
-                  >
-                    Legendary
-                  </button>
-                  <button
-                    onClick={() => setRarity('epic')}
-                    className={`py-2 rounded-xl text-xs font-bold transition-all ${
-                      rarity === 'epic' ? 'bg-purple-600 text-white shadow-md' : 'bg-slate-950 text-slate-400 hover:text-white'
-                    }`}
-                  >
-                    Epic
-                  </button>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-300 uppercase mb-2">
-                  Current Star Level: <span className="text-amber-400 font-bold">{currentStars}★</span>
-                </label>
-                <select
-                  value={currentStars}
-                  onChange={(e) => setCurrentStars(Number(e.target.value))}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-purple-500"
-                >
-                  <option value={0}>0★ (Newly Summoned / Unstarred)</option>
-                  <option value={1}>1★ Star</option>
-                  <option value={2}>2★ Star</option>
-                  <option value={3}>3★ Star (Skill Lv 2)</option>
-                  <option value={4}>4★ Star</option>
-                  <option value={5}>5★ Star (Ultimate Lv 3)</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-300 uppercase mb-2">
-                  Target Star Level: <span className="text-purple-400 font-bold">{targetStars}★</span>
-                </label>
-                <select
-                  value={targetStars}
-                  onChange={(e) => setTargetStars(Number(e.target.value))}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-purple-500"
-                >
-                  <option value={1}>1★ Star</option>
-                  <option value={2}>2★ Star</option>
-                  <option value={3}>3★ Star</option>
-                  <option value={4}>4★ Star</option>
-                  <option value={5}>5★ Star</option>
-                  <option value={6}>6★ Awakened Core (Max)</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          {/* Results Summary (7 cols) */}
-          <div className="lg:col-span-7 space-y-6">
-            <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 md:p-8 backdrop-blur-md">
-              <h3 className="text-lg font-black text-white mb-6">
-                Total Shard Requirements
-              </h3>
-
-              <div className="bg-slate-950 p-6 rounded-2xl border border-purple-500/40 text-center mb-6">
-                <div className="text-xs uppercase font-bold text-slate-400 mb-1">
-                  Specific {rarity.toUpperCase()} Shards Needed
-                </div>
-                <div className="text-4xl font-black text-purple-400 font-mono">
-                  {starCosts.totalShards}
-                </div>
-                <div className="text-xs text-purple-300 font-semibold mt-1">
-                  Required from {currentStars}★ &rarr; {targetStars}★
-                </div>
-              </div>
-
-              {/* Stat Milestones Unlocked */}
-              <h4 className="text-xs uppercase font-bold text-slate-400 tracking-wider mb-3">
-                Key Upgrades Unlocked Along This Path:
-              </h4>
-              <div className="space-y-2">
-                {starCosts.unlockedBonuses.length === 0 ? (
-                  <div className="text-xs text-slate-500 italic p-3 bg-slate-950 rounded-xl">
-                    Target star tier must be higher than current star tier.
-                  </div>
-                ) : (
-                  starCosts.unlockedBonuses.map((bonus, i) => (
-                    <div key={i} className="flex items-center gap-2 p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-200">
-                      <Sparkles className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                      <span>{bonus}</span>
-                    </div>
-                  ))
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Tab 3: Castle Upgrade Calculator */}
+      {/* Tab: Castle Calculator */}
       {activeTab === 'castle' && (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* Controls (5 cols) */}
           <div className="lg:col-span-5 bg-slate-900/80 border border-slate-800 rounded-3xl p-6 md:p-8 backdrop-blur-md space-y-6">
             <h2 className="text-xl font-black text-white flex items-center gap-2">
               <Castle className="w-5 h-5 text-blue-400" />
-              Castle Level Goals
+              Castle Milestone Rush
             </h2>
 
             <div className="space-y-4">
               <div>
                 <label className="block text-xs font-bold text-slate-300 uppercase mb-2">
-                  Current Castle Level: <span className="text-amber-400 font-bold">{currentCastle}</span>
+                  Current Castle Level: <span className="text-blue-400 font-bold">Lv.{currentCastle}</span>
                 </label>
                 <select
                   value={currentCastle}
                   onChange={(e) => setCurrentCastle(Number(e.target.value))}
                   className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500"
                 >
-                  <option value={1}>Castle 1</option>
-                  <option value={5}>Castle 5</option>
-                  <option value={10}>Castle 10 (Queue 2)</option>
-                  <option value={15}>Castle 15 (Tier 2 Troops)</option>
-                  <option value={20}>Castle 20 (Queue 3)</option>
-                  <option value={25}>Castle 25 (Tier 3 Troops)</option>
+                  <option value={0}>Castle Lv.1 (New Settlement)</option>
+                  <option value={5}>Castle Lv.5</option>
+                  <option value={10}>Castle Lv.10 (Queue 2)</option>
+                  <option value={15}>Castle Lv.15 (Tier 2 Troops)</option>
+                  <option value={20}>Castle Lv.20 (Queue 3)</option>
+                  <option value={25}>Castle Lv.25 (Tier 3 Troops)</option>
                 </select>
               </div>
 
               <div>
                 <label className="block text-xs font-bold text-slate-300 uppercase mb-2">
-                  Target Castle Level: <span className="text-blue-400 font-bold">{targetCastle}</span>
+                  Target Castle Level: <span className="text-emerald-400 font-bold">Lv.{targetCastle}</span>
                 </label>
                 <select
                   value={targetCastle}
                   onChange={(e) => setTargetCastle(Number(e.target.value))}
                   className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500"
                 >
-                  <option value={10}>Castle 10</option>
-                  <option value={15}>Castle 15 (Tier 2 Troops)</option>
-                  <option value={20}>Castle 20 (Queue 3)</option>
-                  <option value={25}>Castle 25 (Tier 3 Troops)</option>
-                  <option value={30}>Castle 30 (Apex Citadel)</option>
+                  <option value={10}>Castle Lv.10</option>
+                  <option value={15}>Castle Lv.15 (Tier 2 Troops)</option>
+                  <option value={20}>Castle Lv.20 (Queue 3)</option>
+                  <option value={25}>Castle Lv.25 (Tier 3 Troops)</option>
+                  <option value={30}>Castle Lv.30 (Endgame Cap)</option>
                 </select>
               </div>
             </div>
+
+            <div className="p-4 rounded-2xl bg-slate-950/70 border border-slate-800 text-xs text-slate-400 leading-relaxed">
+              🏰 <strong>Strategic Rush:</strong> Rushing to Castle Lv.20 unlocks Queue 3, unlocking a massive 50% increase in daily resource gathering and Arms Race scoring capability.
+            </div>
           </div>
 
-          {/* Results Summary (7 cols) */}
           <div className="lg:col-span-7 space-y-6">
             <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 md:p-8 backdrop-blur-md">
-              <div className="flex items-center justify-between border-b border-slate-800 pb-4 mb-6">
-                <h3 className="text-lg font-black text-white">
-                  Resources & Construction Time ({currentCastle} &rarr; {targetCastle})
-                </h3>
-                <span className="text-xs font-bold text-blue-400 bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/30">
-                  Base Time: ~{castleCosts.timeStr}
-                </span>
-              </div>
+              <h3 className="text-lg font-black text-white mb-6">
+                Total City Construction Requirements
+              </h3>
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-                <div className="bg-slate-950 p-3.5 rounded-xl border border-slate-800 text-center">
-                  <div className="text-[10px] uppercase font-bold text-slate-400">Meat</div>
-                  <div className="text-lg font-black text-white font-mono mt-1">{(castleCosts.meat / 1000000).toFixed(1)}M</div>
-                </div>
-                <div className="bg-slate-950 p-3.5 rounded-xl border border-slate-800 text-center">
-                  <div className="text-[10px] uppercase font-bold text-slate-400">Wood</div>
-                  <div className="text-lg font-black text-white font-mono mt-1">{(castleCosts.wood / 1000000).toFixed(1)}M</div>
-                </div>
-                <div className="bg-slate-950 p-3.5 rounded-xl border border-slate-800 text-center">
-                  <div className="text-[10px] uppercase font-bold text-slate-400">Stone</div>
-                  <div className="text-lg font-black text-white font-mono mt-1">{(castleCosts.stone / 1000000).toFixed(1)}M</div>
-                </div>
-                <div className="bg-slate-950 p-3.5 rounded-xl border border-slate-800 text-center">
-                  <div className="text-[10px] uppercase font-bold text-slate-400">Iron</div>
-                  <div className="text-lg font-black text-white font-mono mt-1">{(castleCosts.iron / 1000000).toFixed(1)}M</div>
-                </div>
-              </div>
-
-              {/* Key Unlocks */}
-              <h4 className="text-xs uppercase font-bold text-slate-400 tracking-wider mb-2">
-                Unlocks & Military Capacity:
-              </h4>
-              <div className="space-y-1.5 mb-4">
-                {castleCosts.unlocks.map((u, i) => (
-                  <div key={i} className="text-xs text-emerald-300 bg-emerald-950/20 p-2.5 rounded-xl border border-emerald-500/30 flex items-center gap-2">
-                    <span>👑</span>
-                    <span>{u}</span>
+                <div className="bg-slate-950 p-3 rounded-2xl border border-red-500/30 text-center">
+                  <div className="text-[10px] uppercase font-bold text-slate-400 mb-0.5">Meat</div>
+                  <div className="text-lg font-black text-red-400 font-mono">
+                    {(castleCosts.meat / 1000000).toFixed(1)}M
                   </div>
-                ))}
+                </div>
+                <div className="bg-slate-950 p-3 rounded-2xl border border-emerald-500/30 text-center">
+                  <div className="text-[10px] uppercase font-bold text-slate-400 mb-0.5">Wood</div>
+                  <div className="text-lg font-black text-emerald-400 font-mono">
+                    {(castleCosts.wood / 1000000).toFixed(1)}M
+                  </div>
+                </div>
+                <div className="bg-slate-950 p-3 rounded-2xl border border-blue-500/30 text-center">
+                  <div className="text-[10px] uppercase font-bold text-slate-400 mb-0.5">Stone</div>
+                  <div className="text-lg font-black text-blue-400 font-mono">
+                    {(castleCosts.stone / 1000000).toFixed(1)}M
+                  </div>
+                </div>
+                <div className="bg-slate-950 p-3 rounded-2xl border border-purple-500/30 text-center">
+                  <div className="text-[10px] uppercase font-bold text-slate-400 mb-0.5">Iron</div>
+                  <div className="text-lg font-black text-purple-400 font-mono">
+                    {(castleCosts.iron / 1000000).toFixed(1)}M
+                  </div>
+                </div>
               </div>
 
-              {/* Prerequisites */}
+              <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between text-xs mb-6">
+                <span className="text-slate-400">Total Base Construction Time:</span>
+                <span className="text-amber-400 font-bold font-mono text-sm">{castleCosts.timeStr}</span>
+              </div>
+
               <h4 className="text-xs uppercase font-bold text-slate-400 tracking-wider mb-2">
-                Building Prerequisites:
+                Critical Level Breakthroughs:
               </h4>
-              <div className="space-y-1 text-xs text-slate-400">
-                {castleCosts.prerequisites.map((p, i) => (
-                  <div key={i} className="p-2 rounded-lg bg-slate-950 border border-slate-800">
-                    {p}
+              <div className="space-y-1.5 text-xs text-slate-300">
+                {castleCosts.unlocks.map((u, i) => (
+                  <div key={i} className="flex items-center gap-2 p-2 rounded-lg bg-slate-950/50">
+                    <span className="text-emerald-400">&check;</span>
+                    <span>{u}</span>
                   </div>
                 ))}
               </div>
@@ -493,4 +888,3 @@ export default function ResourceCalculator() {
     </div>
   );
 }
-

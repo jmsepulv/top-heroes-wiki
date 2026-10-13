@@ -1,5 +1,6 @@
 ---
 import { getPath } from '../utils/paths';
+import CommandPalette from './CommandPalette';
 
 const currentPath = Astro.url.pathname;
 const isActive = (path: string) => {
@@ -88,6 +89,14 @@ const isActive = (path: string) => {
         Gear
       </a>
       <a
+        href={getPath('/progression')}
+        class={`px-2.5 py-1.5 rounded-lg text-sm font-medium transition-all ${
+          isActive('/progression') ? 'text-cyan-400 bg-cyan-500/10 border border-cyan-500/30' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
+        }`}
+      >
+        Database
+      </a>
+      <a
         href={getPath('/events')}
         class={`px-2.5 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 ${
           isActive('/events') ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/30' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
@@ -122,8 +131,25 @@ const isActive = (path: string) => {
       </a>
     </nav>
 
-    <!-- Patch Badge & CTA -->
-    <div class="flex items-center gap-3">
+    <!-- Search, Patch Badge & CTA -->
+    <div class="flex items-center gap-2.5">
+      <!-- Quick Search Trigger Button -->
+      <button
+        type="button"
+        id="search-trigger-btn"
+        class="flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-xs text-slate-400 hover:text-white transition-all shadow-sm group"
+        title="Search wiki (Ctrl+K or /)"
+      >
+        <svg class="w-3.5 h-3.5 text-amber-400 group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.3-4.3"></path>
+        </svg>
+        <span class="hidden md:inline font-medium">Search...</span>
+        <kbd class="hidden sm:inline-flex items-center px-1.5 py-0.5 rounded bg-slate-950 border border-slate-800 text-[10px] font-bold text-slate-500 group-hover:text-amber-400 transition-colors">
+          Ctrl K
+        </kbd>
+      </button>
+
       <div class="hidden sm:flex items-center gap-2 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold">
         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
         Patch 1.24.0 Live
@@ -136,4 +162,13 @@ const isActive = (path: string) => {
       </a>
     </div>
   </div>
+
+  <!-- Global Command Palette Component -->
+  <CommandPalette client:load />
 </header>
+
+<script>
+  document.getElementById('search-trigger-btn')?.addEventListener('click', () => {
+    window.dispatchEvent(new CustomEvent('open-command-palette'));
+  });
+</script>

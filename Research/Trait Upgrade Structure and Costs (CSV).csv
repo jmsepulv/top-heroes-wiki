@@ -1,0 +1,6 @@
+item,trait_level,resource,cost,scope,notes,source_url
+trait unlock,1,diamonds,,rarity scope unspecified by source,amount not documented,https://topheroes1.fandom.com/wiki/Heroes
+trait upgrade,2-30,shards,10,rarity scope unspecified by source,per level,https://topheroes1.fandom.com/wiki/Heroes
+trait swap,any,diamonds,2000,rarity scope unspecified by source,swap between heroes,https://www.reddit.com/r/TopHeroes/comments/1qlj2dt/hero_traits/
+total all 4 traits max,1-30,shards,1160,Mythic (as discussed in source),derived: (30-1)*10*4,https://www.reddit.com/r/TopHeroes/comments/1p2i9ab/is_this_a_joke/
+max trait level,30,,,rarity scope unspecified by source,maximum level cap,https://topheroes1.fandom.com/wiki/Heroes

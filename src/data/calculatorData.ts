@@ -1,4 +1,18 @@
 // Data models and progression tables for Top Heroes calculators
+// Derived from community verified research
+import {
+  STAR_PROMOTION_SCHEDULE,
+  TOTAL_SHARDS_BY_RARITY,
+  AWAKENING_COSTS,
+  TOTAL_AWAKENING_COST,
+  TRAIT_ROTATION_STEPS,
+  TRAIT_RULES,
+  EPIC_GLOBAL_PASSIVES,
+  type StarPromotionStep,
+  type AwakeningLevelCost,
+  type TraitRotationStep,
+  type EpicGlobalPassive,
+} from './progression';
 
 export interface LevelMilestone {
   level: number;
@@ -20,39 +34,6 @@ export const LEVEL_MILESTONES: LevelMilestone[] = [
   { level: 200, promotionStonesNeeded: 16000, totalMeatToNextMilestone: 22000000, totalXpToNextMilestone: 19000000 },
 ];
 
-export interface StarTier {
-  stars: number;
-  shardsRequired: number;
-  statBonus: string;
-}
-
-export const STAR_TIERS: Record<string, StarTier[]> = {
-  mythic: [
-    { stars: 1, shardsRequired: 20, statBonus: '+10% Base HP & ATK' },
-    { stars: 2, shardsRequired: 40, statBonus: '+20% Base HP & ATK' },
-    { stars: 3, shardsRequired: 80, statBonus: '+35% Base HP & ATK, Skill Lv 2' },
-    { stars: 4, shardsRequired: 140, statBonus: '+55% Base HP & ATK' },
-    { stars: 5, shardsRequired: 220, statBonus: '+80% Base HP & ATK, Ultimate Lv 3' },
-    { stars: 6, shardsRequired: 300, statBonus: 'Awakened Core: +110% Stats, Exclusive Aura' },
-  ],
-  legendary: [
-    { stars: 1, shardsRequired: 15, statBonus: '+8% Base HP & ATK' },
-    { stars: 2, shardsRequired: 30, statBonus: '+18% Base HP & ATK' },
-    { stars: 3, shardsRequired: 60, statBonus: '+30% Base HP & ATK, Skill Lv 2' },
-    { stars: 4, shardsRequired: 100, statBonus: '+45% Base HP & ATK' },
-    { stars: 5, shardsRequired: 160, statBonus: '+65% Base HP & ATK, Ultimate Lv 3' },
-    { stars: 6, shardsRequired: 240, statBonus: 'Awakened Core: +90% Stats' },
-  ],
-  epic: [
-    { stars: 1, shardsRequired: 10, statBonus: '+6% Base HP & ATK' },
-    { stars: 2, shardsRequired: 20, statBonus: '+14% Base HP & ATK' },
-    { stars: 3, shardsRequired: 40, statBonus: '+25% Base HP & ATK, Skill Lv 2' },
-    { stars: 4, shardsRequired: 70, statBonus: '+38% Base HP & ATK' },
-    { stars: 5, shardsRequired: 110, statBonus: '+55% Base HP & ATK, Ultimate Lv 3' },
-    { stars: 6, shardsRequired: 160, statBonus: 'Awakened Core: +75% Stats' },
-  ],
-};
-
 export interface CastleLevelRequirement {
   level: number;
   meat: number;
@@ -73,3 +54,12 @@ export const CASTLE_DATA: CastleLevelRequirement[] = [
   { level: 30, meat: 65000000, wood: 65000000, stone: 42000000, iron: 25000000, baseTimeHours: 480, prerequisite: 'Wall Lv.29, Hall of War Lv.29', keyUnlocks: 'Queue 4 Unlocked, Mythic Resonance Cap' },
 ];
 
+export {
+  STAR_PROMOTION_SCHEDULE,
+  TOTAL_SHARDS_BY_RARITY,
+  AWAKENING_COSTS,
+  TOTAL_AWAKENING_COST,
+  TRAIT_ROTATION_STEPS,
+  TRAIT_RULES,
+  EPIC_GLOBAL_PASSIVES,
+};

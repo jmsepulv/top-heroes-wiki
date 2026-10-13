@@ -1,35 +1,31 @@
+import { CANONICAL_GEAR_SETS, TITAN_MARKS, ALL_HERO_GEAR_RECOMMENDATIONS, type GearSetInfo } from './progression';
+
 export interface GearSet {
   id: string;
   name: string;
   rarity: 'mythic' | 'legendary' | 'epic';
   recommendedFor: string;
+  gearAttackPct: number;
+  gearHpPct: number;
+  otherBonusName: string;
+  otherBonusPct: number;
+  description: string;
   twoPieceBonus: string;
   fourPieceBonus: string;
-  twoPieceStats: {
-    hpPercent?: number;
-    atkPercent?: number;
-    defPercent?: number;
-    dmgRed?: number;
-    critRate?: number;
-    haste?: number;
-    healing?: number;
-  };
 }
 
 export interface EquipItem {
   id: string;
   name: string;
-  slot: 'weapon' | 'armor' | 'helmet' | 'boots' | 'ring';
+  slot: 'weapon' | 'armor' | 'helmet' | 'boots';
   rarity: 'mythic' | 'legendary' | 'epic';
   setId: string;
   stats: {
-    hp?: number;
-    atk?: number;
+    hp: number;
+    atk: number;
     def?: number;
     spd?: number;
     critRate?: number;
-    haste?: number;
-    dmgRed?: number;
   };
 }
 
@@ -48,73 +44,153 @@ export interface Artifact {
   };
 }
 
+// Canonical Top Heroes 4-piece endgame gear sets
 export const GEAR_SETS: GearSet[] = [
   {
-    id: 'valiant_knight',
-    name: "Valiant Guardian's Plate",
+    id: 'fury_of_blood',
+    name: 'Fury of Blood',
     rarity: 'mythic',
-    recommendedFor: 'Tanks & Frontline Bruisers (Paragon, Secret Keeper, Treant)',
-    twoPieceBonus: '+15% Max HP & +10% Damage Reduction',
-    fourPieceBonus: 'Upon dropping below 40% HP, gain a barrier equal to 35% Max HP for 8s (CD: 45s).',
-    twoPieceStats: { hpPercent: 15, dmgRed: 10 },
+    recommendedFor: 'Tanks, healers, HP-scaling kits, Nature faction',
+    gearAttackPct: 0,
+    gearHpPct: 160,
+    otherBonusName: 'Damage Reduction',
+    otherBonusPct: 6,
+    description: '+160% Gear HP, +6% Damage Reduction. Supreme defensive durability for frontline tanks and HP healers.',
+    twoPieceBonus: '+40% Gear HP',
+    fourPieceBonus: '+160% Gear HP & +6% Universal Damage Reduction',
   },
   {
-    id: 'arcane_conduit',
-    name: 'Arcane Conduit Robes',
+    id: 'glory_of_the_knight',
+    name: 'Glory of the Knight',
     rarity: 'mythic',
-    recommendedFor: 'Magic DPS & Nukers (Pyromancer, Astrologer, Warlock)',
-    twoPieceBonus: '+18% Magic ATK & +12% Skill Haste',
-    fourPieceBonus: 'Skills inflict Burn/Shock dealing 40% ATK per second for 4s, stacking up to 3 times.',
-    twoPieceStats: { atkPercent: 18, haste: 12 },
+    recommendedFor: 'Skill-damage & AoE nukers (Paragon, Bishop, Pyromancer)',
+    gearAttackPct: 40,
+    gearHpPct: 80,
+    otherBonusName: 'Skill Damage Amplify',
+    otherBonusPct: 8,
+    description: '+40% Gear ATK, +80% Gear HP, +8% Skill Damage Amplify. Optimal for skill and ultimate burst damage.',
+    twoPieceBonus: '+20% Gear ATK & +40% Gear HP',
+    fourPieceBonus: '+40% Gear ATK, +80% Gear HP & +8% Skill Damage Amplify',
   },
   {
-    id: 'savage_predator',
-    name: 'Savage Predator Leather',
+    id: 'titans_might',
+    name: "Titan's Might",
     rarity: 'mythic',
-    recommendedFor: 'Physical DPS & Assassins (Desert Prince, Windwalker, Headhunter)',
-    twoPieceBonus: '+15% Physical ATK & +12% Crit Rate',
-    fourPieceBonus: 'Critical strikes increase ATK Speed by 25% and Armor Penetration by 20% for 6s.',
-    twoPieceStats: { atkPercent: 15, critRate: 12 },
-  },
-  {
-    id: 'celestial_hymn',
-    name: 'Celestial Hymn Vestments',
-    rarity: 'legendary',
-    recommendedFor: 'Supports & Healers (Forest Maiden, Bard, Shaman, Druid)',
-    twoPieceBonus: '+15% Healing Output & +10% Energy Regen',
-    fourPieceBonus: 'Casting an ultimate grants all allies +15% ATK and +15% DEF for 6s.',
-    twoPieceStats: { healing: 15, haste: 10 },
+    recommendedFor: 'Flat-ATK scaling & raw DPS carries (Wanderer, Storm Maiden, Astrologer)',
+    gearAttackPct: 80,
+    gearHpPct: 0,
+    otherBonusName: 'Damage Increase',
+    otherBonusPct: 6,
+    description: "+80% Gear ATK, +6% Damage Increase. Maximum sustained physical and attack-scaling damage output.",
+    twoPieceBonus: '+40% Gear ATK',
+    fourPieceBonus: "+80% Gear ATK & +6% Universal Damage Increase",
   },
 ];
 
+// Equipment items per set (4 slots: Weapon / Sword, Armor, Helmet, Boots)
+// In Top Heroes: Sword & Boots provide Gear Attack primary; Helmet & Armor provide Gear HP primary
 export const EQUIP_ITEMS: EquipItem[] = [
-  // ================= Valiant Guardian Set =================
-  { id: 'valiant_sword', name: "Guardian's Warblade", slot: 'weapon', rarity: 'mythic', setId: 'valiant_knight', stats: { atk: 1800, hp: 12000, def: 500 } },
-  { id: 'valiant_armor', name: "Guardian's Heavy Plate", slot: 'armor', rarity: 'mythic', setId: 'valiant_knight', stats: { hp: 38000, def: 2400, dmgRed: 6 } },
-  { id: 'valiant_helm', name: "Guardian's Greathelm", slot: 'helmet', rarity: 'mythic', setId: 'valiant_knight', stats: { hp: 22000, def: 1800 } },
-  { id: 'valiant_boots', name: "Guardian's Iron Sabatons", slot: 'boots', rarity: 'mythic', setId: 'valiant_knight', stats: { hp: 18000, def: 1200, spd: 40 } },
-  { id: 'valiant_ring', name: "Guardian's Bulwark Band", slot: 'ring', rarity: 'mythic', setId: 'valiant_knight', stats: { hp: 25000, def: 1500, dmgRed: 4 } },
+  // ================= Fury of Blood =================
+  {
+    id: 'fury_sword',
+    name: "Bloodfury Blade",
+    slot: 'weapon',
+    rarity: 'mythic',
+    setId: 'fury_of_blood',
+    stats: { atk: 3200, hp: 12000, def: 400 },
+  },
+  {
+    id: 'fury_armor',
+    name: "Bloodfury Carapace",
+    slot: 'armor',
+    rarity: 'mythic',
+    setId: 'fury_of_blood',
+    stats: { atk: 1200, hp: 42000, def: 2100 },
+  },
+  {
+    id: 'fury_helmet',
+    name: "Bloodfury Greathelm",
+    slot: 'helmet',
+    rarity: 'mythic',
+    setId: 'fury_of_blood',
+    stats: { atk: 1400, hp: 36000, def: 1800 },
+  },
+  {
+    id: 'fury_boots',
+    name: "Bloodfury Warboots",
+    slot: 'boots',
+    rarity: 'mythic',
+    setId: 'fury_of_blood',
+    stats: { atk: 3100, hp: 14000, spd: 45 },
+  },
 
-  // ================= Arcane Conduit Set =================
-  { id: 'arcane_staff', name: 'Conduit Astral Staff', slot: 'weapon', rarity: 'mythic', setId: 'arcane_conduit', stats: { atk: 4800, haste: 8, critRate: 6 } },
-  { id: 'arcane_robe', name: 'Conduit Weave Robe', slot: 'armor', rarity: 'mythic', setId: 'arcane_conduit', stats: { hp: 16000, def: 900, haste: 6 } },
-  { id: 'arcane_hood', name: 'Conduit Astromancer Hood', slot: 'helmet', rarity: 'mythic', setId: 'arcane_conduit', stats: { atk: 1500, hp: 12000, haste: 5 } },
-  { id: 'arcane_boots', name: 'Conduit Starlight Slippers', slot: 'boots', rarity: 'mythic', setId: 'arcane_conduit', stats: { atk: 1200, spd: 70, haste: 4 } },
-  { id: 'arcane_ring', name: 'Conduit Resonance Ring', slot: 'ring', rarity: 'mythic', setId: 'arcane_conduit', stats: { atk: 3200, critRate: 8, haste: 5 } },
+  // ================= Glory of the Knight =================
+  {
+    id: 'glory_sword',
+    name: "Knight's Radiant Edge",
+    slot: 'weapon',
+    rarity: 'mythic',
+    setId: 'glory_of_the_knight',
+    stats: { atk: 4500, hp: 14000, critRate: 6 },
+  },
+  {
+    id: 'glory_armor',
+    name: "Knight's Regal Cuirass",
+    slot: 'armor',
+    rarity: 'mythic',
+    setId: 'glory_of_the_knight',
+    stats: { atk: 1800, hp: 32000, def: 1500 },
+  },
+  {
+    id: 'glory_helmet',
+    name: "Knight's Crested Visor",
+    slot: 'helmet',
+    rarity: 'mythic',
+    setId: 'glory_of_the_knight',
+    stats: { atk: 2100, hp: 28000, def: 1200 },
+  },
+  {
+    id: 'glory_boots',
+    name: "Knight's Gilded Sabatons",
+    slot: 'boots',
+    rarity: 'mythic',
+    setId: 'glory_of_the_knight',
+    stats: { atk: 4200, hp: 16000, spd: 55 },
+  },
 
-  // ================= Savage Predator Set =================
-  { id: 'savage_daggers', name: 'Predator Twin Fangs', slot: 'weapon', rarity: 'mythic', setId: 'savage_predator', stats: { atk: 5200, critRate: 10, spd: 50 } },
-  { id: 'savage_chest', name: 'Predator Shadow Jerkin', slot: 'armor', rarity: 'mythic', setId: 'savage_predator', stats: { hp: 20000, def: 1100, critRate: 5 } },
-  { id: 'savage_helm', name: 'Predator Wolf Cowl', slot: 'helmet', rarity: 'mythic', setId: 'savage_predator', stats: { atk: 1800, hp: 14000, critRate: 6 } },
-  { id: 'savage_boots', name: 'Predator Swift Striders', slot: 'boots', rarity: 'mythic', setId: 'savage_predator', stats: { atk: 1400, spd: 90, critRate: 4 } },
-  { id: 'savage_ring', name: 'Predator Blood Band', slot: 'ring', rarity: 'mythic', setId: 'savage_predator', stats: { atk: 3500, critRate: 10 } },
-
-  // ================= Celestial Hymn Set =================
-  { id: 'celestial_scepter', name: 'Hymn Blessed Scepter', slot: 'weapon', rarity: 'legendary', setId: 'celestial_hymn', stats: { atk: 2800, hp: 15000, haste: 8 } },
-  { id: 'celestial_vest', name: 'Hymn Vestment Robe', slot: 'armor', rarity: 'legendary', setId: 'celestial_hymn', stats: { hp: 24000, def: 1400, dmgRed: 5 } },
-  { id: 'celestial_mitre', name: 'Hymn Golden Mitre', slot: 'helmet', rarity: 'legendary', setId: 'celestial_hymn', stats: { hp: 18000, def: 1100, haste: 6 } },
-  { id: 'celestial_boots', name: 'Hymn Pilgrim Sandals', slot: 'boots', rarity: 'legendary', setId: 'celestial_hymn', stats: { hp: 14000, spd: 60, haste: 5 } },
-  { id: 'celestial_ring', name: 'Hymn Rosary Signet', slot: 'ring', rarity: 'legendary', setId: 'celestial_hymn', stats: { hp: 20000, atk: 1500, haste: 8 } },
+  // ================= Titan's Might =================
+  {
+    id: 'titan_sword',
+    name: "Titan's Crushing Cleaver",
+    slot: 'weapon',
+    rarity: 'mythic',
+    setId: 'titans_might',
+    stats: { atk: 5800, hp: 8000, critRate: 8 },
+  },
+  {
+    id: 'titan_armor',
+    name: "Titan's Colossus Mail",
+    slot: 'armor',
+    rarity: 'mythic',
+    setId: 'titans_might',
+    stats: { atk: 2800, hp: 22000, def: 1100 },
+  },
+  {
+    id: 'titan_helmet',
+    name: "Titan's Horned Crown",
+    slot: 'helmet',
+    rarity: 'mythic',
+    setId: 'titans_might',
+    stats: { atk: 3000, hp: 18000, critRate: 5 },
+  },
+  {
+    id: 'titan_boots',
+    name: "Titan's Earthshaker Greaves",
+    slot: 'boots',
+    rarity: 'mythic',
+    setId: 'titans_might',
+    stats: { atk: 5400, hp: 9000, spd: 65 },
+  },
 ];
 
 export const ARTIFACTS: Artifact[] = [
@@ -151,3 +227,5 @@ export const ARTIFACTS: Artifact[] = [
     stats: { hp: 35000, energyRegen: 25 },
   },
 ];
+
+export { TITAN_MARKS, ALL_HERO_GEAR_RECOMMENDATIONS };

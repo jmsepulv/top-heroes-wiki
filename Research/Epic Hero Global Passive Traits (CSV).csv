@@ -1,0 +1,6 @@
+hero,faction,bonus_name,max_bonus_pct,max_trait_level,unlock_requirement,priority,notes,source_url
+Brawler,League,Tech Research Speed,30,30,2-star Platinum / 12 stars,HIGHEST,relationship to post-promotion trait system unresolved,https://topheroes.info/hero-guide.php
+Knight,League,Soldier Training Speed,30,30,2-star Platinum / 12 stars,HIGHEST,relationship to post-promotion trait system unresolved,https://topheroes.info/hero-guide.php
+Ranger,League,Ruby Gathering Speed,30,30,2-star Platinum / 12 stars,HIGH,relationship to post-promotion trait system unresolved,https://topheroes.info/hero-guide.php
+Minister,League,Soldier Healing Speed,30,30,2-star Platinum / 12 stars,MEDIUM,relationship to post-promotion trait system unresolved,https://topheroes.info/hero-guide.php
+Outlaw,Horde,Wood Gathering Speed,30,30,2-star Platinum / 12 stars,LOW,relationship to post-promotion trait system unresolved,https://topheroes.info/hero-guide.php

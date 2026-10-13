@@ -1,0 +1,4 @@
+set_name,gear_attack_pct,gear_hp_pct,other_bonus_name,other_bonus_pct,best_role,source_url
+Fury of Blood,0,160,Damage Reduction,6,Tanks / healers / HP-scaling / Nature faction,https://topheroes.info/gear-guide.php
+Glory of the Knight,40,80,Skill Damage Amplify,8,Skill-damage / AoE heroes,https://topheroes.info/gear-guide.php
+Titan's Might,80,0,Damage Increase,6,Flat-ATK scaling / raw DPS heroes,https://topheroes.info/gear-guide.php

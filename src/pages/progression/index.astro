@@ -1,0 +1,469 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import {
+  CANONICAL_GEAR_SETS,
+  GEAR_PIECE_TYPES,
+  TITAN_MARKS,
+  ALL_HERO_GEAR_RECOMMENDATIONS,
+  ENHANCEMENT_MASTER_FLAT,
+  ENHANCEMENT_MASTER_PERCENT,
+  STAR_PROMOTION_SCHEDULE,
+  AWAKENING_COSTS,
+  TRAIT_ROTATION_STEPS,
+  TRAIT_RULES,
+  EPIC_GLOBAL_PASSIVES,
+  SKILL_BOOK_CONSUMPTION,
+} from '../../data/progression';
+import { getPath } from '../../utils/paths';
+---
+
+<Layout
+  title="Top Heroes Progression & Systems Wiki Database | Verified Mechanics"
+  description="Comprehensive progression wiki database for Top Heroes: Kingdom Saga. Full reference tables for 4-piece gear sets, Titan Marks, Enhancement Master bonuses, 15-star shard schedules, Awakening costs, and Epic hero global passives."
+>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 space-y-12">
+    <!-- Header Banner -->
+    <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 md:p-10 backdrop-blur-md shadow-2xl">
+      <div class="max-w-3xl">
+        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-500/10 text-amber-400 border border-amber-500/30 mb-3">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span>Verified Game Mechanics Database • Patch 1.24.0</span>
+        </div>
+        <h1 class="text-3xl sm:text-5xl font-black text-white tracking-tight">
+          Progression & Systems Wiki Database
+        </h1>
+        <p class="text-sm sm:text-base text-slate-300 mt-3 leading-relaxed">
+          Extracted directly from top competitive research and community sources. Explore verified reference tables for gear sets, Titan Marks, Enhancement Master ladders, star promotions, trait rotations, and account-wide Epic passives.
+        </p>
+
+        <!-- Quick Jump Links -->
+        <div class="flex flex-wrap gap-2 mt-6">
+          <a href="#gear-recommendations" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-200 transition-colors">
+            46 Heroes Gear Matrix &darr;
+          </a>
+          <a href="#gear-sets" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-200 transition-colors">
+            Gear Sets & Titan Marks &darr;
+          </a>
+          <a href="#enhancement-master" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-200 transition-colors">
+            Enhancement Master &darr;
+          </a>
+          <a href="#star-promotion" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-200 transition-colors">
+            Star & Awakening Shards &darr;
+          </a>
+          <a href="#traits-system" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-200 transition-colors">
+            Traits & Rotation &darr;
+          </a>
+          <a href="#epic-passives" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-indigo-300 transition-colors">
+            Epic Global Passives &darr;
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 1: Per-Hero Gear Recommendations Matrix -->
+    <section id="gear-recommendations" class="space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-800 pb-4">
+        <div>
+          <span class="text-xs font-black uppercase tracking-wider text-purple-400">Database Table 1</span>
+          <h2 class="text-2xl sm:text-3xl font-black text-white mt-0.5">Per-Hero Gear Recommendations (46 Heroes)</h2>
+          <p class="text-xs text-slate-400 mt-1">Verified endgame set and alternate set recommendations for every hero in the game.</p>
+        </div>
+        <a
+          href={getPath('/gear')}
+          class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold transition-all shadow-md shadow-purple-600/20"
+        >
+          <span>Test in Gear Simulator</span>
+          <span>&rarr;</span>
+        </a>
+      </div>
+
+      <div class="bg-slate-900/80 border border-slate-800 rounded-3xl overflow-hidden shadow-xl">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs text-slate-300">
+            <thead class="bg-slate-950 text-slate-400 uppercase font-bold border-b border-slate-800">
+              <tr>
+                <th class="p-3.5 sm:p-4">Hero Name</th>
+                <th class="p-3.5 sm:p-4">Faction</th>
+                <th class="p-3.5 sm:p-4">Rarity</th>
+                <th class="p-3.5 sm:p-4 text-purple-400">Recommended Set</th>
+                <th class="p-3.5 sm:p-4 text-slate-400">Alternate Set</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-800/80">
+              {ALL_HERO_GEAR_RECOMMENDATIONS.map((r) => (
+                <tr class="hover:bg-slate-800/40 transition-colors">
+                  <td class="p-3.5 sm:p-4 font-bold text-white text-sm">{r.hero}</td>
+                  <td class="p-3.5 sm:p-4">
+                    <span class={`text-[10px] font-black uppercase px-2 py-0.5 rounded border ${
+                      r.faction === 'League' ? 'text-blue-400 bg-blue-500/10 border-blue-500/30' :
+                      r.faction === 'Nature' ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/30' :
+                      'text-red-400 bg-red-500/10 border-red-500/30'
+                    }`}>
+                      {r.faction}
+                    </span>
+                  </td>
+                  <td class="p-3.5 sm:p-4 font-semibold text-slate-300">{r.rarity}</td>
+                  <td class="p-3.5 sm:p-4 font-bold text-purple-300">{r.recommendedSet}</td>
+                  <td class="p-3.5 sm:p-4 text-slate-400">{r.alternateSet || '—'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2: Canonical Gear Sets & Titan Marks -->
+    <section id="gear-sets" class="space-y-6">
+      <div class="border-b border-slate-800 pb-4">
+        <span class="text-xs font-black uppercase tracking-wider text-amber-400">Database Table 2 & 3</span>
+        <h2 class="text-2xl sm:text-3xl font-black text-white mt-0.5">Endgame Gear Sets & Titan Marks</h2>
+        <p class="text-xs text-slate-400 mt-1">4-piece aggregate stat multipliers, piece attribute distribution, and Titan Mark resonance.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {CANONICAL_GEAR_SETS.map((set) => (
+          <div class="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 backdrop-blur-md space-y-4 hover:border-purple-500/40 transition-all">
+            <div class="flex items-center justify-between">
+              <h3 class="text-xl font-black text-white">{set.name}</h3>
+              <span class="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-purple-500/20 text-purple-400 border border-purple-500/30">
+                4-Piece Set
+              </span>
+            </div>
+
+            <p class="text-xs text-slate-300 leading-relaxed">{set.description}</p>
+
+            <div class="space-y-2 pt-2 border-t border-slate-800 text-xs">
+              <div class="flex justify-between p-2 rounded-lg bg-slate-950">
+                <span class="text-slate-400">Gear HP:</span>
+                <span class="font-mono font-bold text-emerald-400">{set.gearHpPct > 0 ? `+${set.gearHpPct}%` : '—'}</span>
+              </div>
+              <div class="flex justify-between p-2 rounded-lg bg-slate-950">
+                <span class="text-slate-400">Gear ATK:</span>
+                <span class="font-mono font-bold text-amber-400">{set.gearAttackPct > 0 ? `+${set.gearAttackPct}%` : '—'}</span>
+              </div>
+              <div class="flex justify-between p-2 rounded-lg bg-slate-950">
+                <span class="text-slate-400">{set.otherBonusName}:</span>
+                <span class="font-mono font-bold text-purple-400">+{set.otherBonusPct}%</span>
+              </div>
+            </div>
+
+            <div class="text-[11px] text-slate-400 pt-2 border-t border-slate-800">
+              <strong class="text-slate-300">Optimal Archetype:</strong> {set.bestRole}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <!-- Piece Types & Titan Marks Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 pt-4">
+        <!-- Piece Types Table -->
+        <div class="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 space-y-4">
+          <h3 class="text-lg font-black text-white">Piece Type Stat Allocation</h3>
+          <p class="text-xs text-slate-400">Note: Boots provide attack rather than health, contrary to standard conventions.</p>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs text-slate-300">
+              <thead class="bg-slate-950 text-slate-400 uppercase font-semibold">
+                <tr>
+                  <th class="p-2.5 rounded-l-lg">Piece</th>
+                  <th class="p-2.5">Primary Stat</th>
+                  <th class="p-2.5">Secondary Stat</th>
+                  <th class="p-2.5 rounded-r-lg">Notes</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800">
+                {GEAR_PIECE_TYPES.map((p) => (
+                  <tr key={p.pieceType} class="hover:bg-slate-800/40">
+                    <td class="p-2.5 font-bold text-white">{p.pieceType}</td>
+                    <td class="p-2.5 text-amber-400 font-semibold">{p.primaryStat}</td>
+                    <td class="p-2.5 text-emerald-400 font-semibold">{p.secondaryStat}</td>
+                    <td class="p-2.5 text-slate-400 text-[11px]">{p.notes}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Titan Marks Table -->
+        <div class="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 space-y-4">
+          <h3 class="text-lg font-black text-white">Titan Marks (Faction Resonance)</h3>
+          <p class="text-xs text-slate-400">Assigning a mark to gear activates an unconditional +30% stat boost when equipped on a matching hero.</p>
+          <div class="space-y-3">
+            {TITAN_MARKS.map((m) => (
+              <div key={m.faction} class="p-3.5 rounded-2xl bg-slate-950 border border-slate-800 text-xs space-y-1.5">
+                <div class="flex items-center justify-between">
+                  <span class="font-bold text-white text-sm">{m.faction} Titan Mark</span>
+                  <span class="font-mono font-black text-emerald-400 px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/30">
+                    +{m.bonusPct}% All Stats
+                  </span>
+                </div>
+                <p class="text-slate-400">{m.condition}</p>
+                <div class="text-[11px] text-slate-500">
+                  <strong>Sources:</strong> {m.acquisitionSources.join(' • ')}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: Enhancement Master Bonus Ladders -->
+    <section id="enhancement-master" class="space-y-6">
+      <div class="border-b border-slate-800 pb-4">
+        <span class="text-xs font-black uppercase tracking-wider text-blue-400">Database Table 4</span>
+        <h2 class="text-2xl sm:text-3xl font-black text-white mt-0.5">Enhancement Master Ladders</h2>
+        <p class="text-xs text-slate-400 mt-1">Activates when all 4 gear pieces on a hero reach the same level or higher.</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Flat Stat Ladder -->
+        <div class="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 space-y-4">
+          <h3 class="text-lg font-black text-white">Flat Stat Ladder (Fandom Wiki)</h3>
+          <div class="overflow-x-auto max-h-96 overflow-y-auto">
+            <table class="w-full text-left text-xs text-slate-300">
+              <thead class="bg-slate-950 text-slate-400 uppercase font-semibold sticky top-0">
+                <tr>
+                  <th class="p-2.5 rounded-l-lg">Rarity</th>
+                  <th class="p-2.5">Level / Star</th>
+                  <th class="p-2.5">Gear Attack</th>
+                  <th class="p-2.5 rounded-r-lg">Gear HP</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800">
+                {ENHANCEMENT_MASTER_FLAT.map((row, i) => (
+                  <tr key={i} class="hover:bg-slate-800/40">
+                    <td class="p-2.5 font-bold text-white">{row.rarity}</td>
+                    <td class="p-2.5 text-slate-300">{row.tierLabel}</td>
+                    <td class="p-2.5 text-amber-400 font-mono font-bold">+{row.gearAttack.toLocaleString()}</td>
+                    <td class="p-2.5 text-emerald-400 font-mono font-bold">+{row.gearHp.toLocaleString()}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Percentage Ladder -->
+        <div class="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 space-y-4">
+          <h3 class="text-lg font-black text-white">Percentage Ladder (Community Data)</h3>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs text-slate-300">
+              <thead class="bg-slate-950 text-slate-400 uppercase font-semibold">
+                <tr>
+                  <th class="p-2.5 rounded-l-lg">Enhancement Level</th>
+                  <th class="p-2.5">Gear Attack %</th>
+                  <th class="p-2.5 rounded-r-lg">Gear HP %</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800">
+                {ENHANCEMENT_MASTER_PERCENT.map((row, i) => (
+                  <tr key={i} class="hover:bg-slate-800/40">
+                    <td class="p-2.5 font-bold text-white">{row.level}</td>
+                    <td class="p-2.5 text-amber-400 font-mono font-bold">+{row.gearAttackPct}%</td>
+                    <td class="p-2.5 text-emerald-400 font-mono font-bold">+{row.gearHpPct}%</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div class="p-4 rounded-2xl bg-slate-950/70 border border-slate-800 text-xs text-slate-400 leading-relaxed">
+            💡 <strong>Server Note:</strong> Depending on server generation, Enhancement Master may follow flat stat thresholds or percent multipliers. In all systems, the bonus activates only when all 4 pieces match or exceed the tier.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 4: Star Promotion & Awakening Shard Matrix -->
+    <section id="star-promotion" class="space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-800 pb-4">
+        <div>
+          <span class="text-xs font-black uppercase tracking-wider text-emerald-400">Database Table 5 & 6</span>
+          <h2 class="text-2xl sm:text-3xl font-black text-white mt-0.5">15-Star Promotion & Awakening Costs</h2>
+          <p class="text-xs text-slate-400 mt-1">Total Shards: Epic (500) • Legendary (500) • Mythic (1,000) across 3 bands of 5 stars.</p>
+        </div>
+        <a
+          href={getPath('/calculators')}
+          class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold transition-all shadow-md shadow-amber-500/20"
+        >
+          <span>Open Interactive Calculator</span>
+          <span>&rarr;</span>
+        </a>
+      </div>
+
+      <div class="bg-slate-900/80 border border-slate-800 rounded-3xl overflow-hidden shadow-xl">
+        <div class="overflow-x-auto max-h-[500px] overflow-y-auto">
+          <table class="w-full text-left text-xs text-slate-300">
+            <thead class="bg-slate-950 text-slate-400 uppercase font-bold sticky top-0 border-b border-slate-800">
+              <tr>
+                <th class="p-3.5">Global Star</th>
+                <th class="p-3.5">Star Band</th>
+                <th class="p-3.5">Epic / Star</th>
+                <th class="p-3.5">Epic Cumul.</th>
+                <th class="p-3.5">Legendary / Star</th>
+                <th class="p-3.5">Legendary Cumul.</th>
+                <th class="p-3.5 text-red-400">Mythic / Star</th>
+                <th class="p-3.5 text-red-400">Mythic Cumul.</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-800/80">
+              {STAR_PROMOTION_SCHEDULE.map((s) => (
+                <tr class={`hover:bg-slate-800/40 transition-colors ${s.globalStar === 12 ? 'bg-indigo-950/30' : ''}`}>
+                  <td class="p-3.5 font-black text-white">{s.globalStar}★</td>
+                  <td class="p-3.5 font-medium text-slate-300">
+                    {s.bandName} {s.star}★
+                    {s.globalStar === 12 && (
+                      <span class="ml-2 text-[10px] font-bold text-indigo-400 uppercase bg-indigo-500/10 px-1.5 py-0.5 rounded border border-indigo-500/30">
+                        Unlocks Epic Passives
+                      </span>
+                    )}
+                  </td>
+                  <td class="p-3.5 font-mono text-purple-400 font-bold">{s.epicShards}</td>
+                  <td class="p-3.5 font-mono text-slate-400">{s.epicCumulative}</td>
+                  <td class="p-3.5 font-mono text-amber-400 font-bold">{s.legendaryShards}</td>
+                  <td class="p-3.5 font-mono text-slate-400">{s.legendaryCumulative}</td>
+                  <td class="p-3.5 font-mono text-red-400 font-bold">{s.mythicShards}</td>
+                  <td class="p-3.5 font-mono text-red-300 font-semibold">{s.mythicCumulative}</td>
+                </tr>
+              ))}
+              <tr class="bg-slate-950 font-black text-white border-t-2 border-slate-700">
+                <td class="p-3.5" colspan="2">TOTAL SHARDS TO MAX (15★)</td>
+                <td class="p-3.5 font-mono text-purple-400 text-sm">500</td>
+                <td class="p-3.5 font-mono text-purple-400 text-sm">500</td>
+                <td class="p-3.5 font-mono text-amber-400 text-sm">500</td>
+                <td class="p-3.5 font-mono text-amber-400 text-sm">500</td>
+                <td class="p-3.5 font-mono text-red-400 text-sm">1,000</td>
+                <td class="p-3.5 font-mono text-red-400 text-sm">1,000</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 5: Trait Upgrades & Rotation Rules -->
+    <section id="traits-system" class="space-y-6">
+      <div class="border-b border-slate-800 pb-4">
+        <span class="text-xs font-black uppercase tracking-wider text-amber-400">Database Table 7 & 8</span>
+        <h2 class="text-2xl sm:text-3xl font-black text-white mt-0.5">Hero Trait System & 5-Level Rotation Lock</h2>
+        <p class="text-xs text-slate-400 mt-1">4 traits per hero, level 30 cap, 10 shards per level (1,160 shards total), and strict rotation locks.</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 space-y-4">
+          <h3 class="text-lg font-black text-white">Trait Structure & Cost Rules</h3>
+          <div class="space-y-3 text-xs">
+            <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 flex justify-between items-center">
+              <span class="text-slate-400">Total Traits per Hero:</span>
+              <span class="font-bold text-white font-mono">{TRAIT_RULES.traitCount} Traits</span>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 flex justify-between items-center">
+              <span class="text-slate-400">Maximum Trait Level Cap:</span>
+              <span class="font-bold text-emerald-400 font-mono">Level {TRAIT_RULES.maxTraitLevel}</span>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 flex justify-between items-center">
+              <span class="text-slate-400">Level 1 Unlock Requirement:</span>
+              <span class="font-bold text-amber-400 font-mono">Diamonds (Unlocks slot)</span>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 flex justify-between items-center">
+              <span class="text-slate-400">Levels 2–30 Upgrade Cost:</span>
+              <span class="font-bold text-purple-400 font-mono">{TRAIT_RULES.upgradeCostPerLevel} Shards / Level</span>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 flex justify-between items-center">
+              <span class="text-slate-400">Shards to Max 1 Trait (Lv 1&rarr;30):</span>
+              <span class="font-bold text-purple-300 font-mono">{TRAIT_RULES.shardsPerTraitMax} Shards</span>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-950 border border-emerald-500/40 flex justify-between items-center">
+              <span class="text-slate-200 font-bold">Total Shards to Max All 4 Traits:</span>
+              <span class="font-black text-emerald-400 font-mono text-sm">{TRAIT_RULES.shardsTotalAllTraitsMax} Shards</span>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 flex justify-between items-center">
+              <span class="text-slate-400">Trait Swap Cost Between Heroes:</span>
+              <span class="font-bold text-amber-400 font-mono">{TRAIT_RULES.traitSwapCost.toLocaleString()} Diamonds</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 space-y-4">
+          <h3 class="text-lg font-black text-white">5-Level Rotation Lock Schedule</h3>
+          <p class="text-xs text-slate-400">You must upgrade all 4 traits in synchronized 5-level waves:</p>
+          <div class="space-y-2.5">
+            {TRAIT_ROTATION_STEPS.map((step) => (
+              <div key={step.step} class="p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs flex items-start gap-3">
+                <span class="font-mono font-bold text-emerald-400 shrink-0 px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/30">
+                  Step {step.step}: Lv {step.fromLevel}&rarr;{step.toLevel}
+                </span>
+                <span class="text-slate-300">{step.requirement}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 6: Epic Hero Global Passives Priority -->
+    <section id="epic-passives" class="space-y-6">
+      <div class="border-b border-slate-800 pb-4">
+        <span class="text-xs font-black uppercase tracking-wider text-indigo-400">Database Table 9</span>
+        <h2 class="text-2xl sm:text-3xl font-black text-white mt-0.5">Epic Hero Account-Wide Global Passives</h2>
+        <p class="text-xs text-slate-400 mt-1">Permanent passive bonuses that apply 24/7 without deploying the hero in any active queue.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {EPIC_GLOBAL_PASSIVES.map((p) => (
+          <div key={p.hero} class="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 backdrop-blur-md space-y-4 hover:border-indigo-500/40 transition-all">
+            <div class="flex items-center justify-between">
+              <div>
+                <h3 class="text-xl font-black text-white">{p.hero}</h3>
+                <span class="text-xs text-slate-400 font-semibold">{p.faction} Faction</span>
+              </div>
+              <span class={`text-[10px] font-black uppercase px-2.5 py-1 rounded-full border ${
+                p.priority === 'HIGHEST' ? 'text-red-400 bg-red-500/10 border-red-500/30' :
+                p.priority === 'HIGH' ? 'text-amber-400 bg-amber-500/10 border-amber-500/30' :
+                p.priority === 'MEDIUM' ? 'text-blue-400 bg-blue-500/10 border-blue-500/30' :
+                'text-slate-400 bg-slate-500/10 border-slate-500/30'
+              }`}>
+                {p.priority} Priority
+              </span>
+            </div>
+
+            <div class="p-3.5 rounded-2xl bg-slate-950 border border-slate-800">
+              <div class="text-[10px] uppercase font-bold text-slate-400">Passive Ability</div>
+              <div class="text-lg font-black text-indigo-400 font-mono mt-0.5">
+                {p.bonusName}: +{p.maxBonusPct}%
+              </div>
+            </div>
+
+            <p class="text-xs text-slate-300 leading-relaxed">{p.description}</p>
+
+            <div class="text-[11px] text-slate-500 pt-3 border-t border-slate-800/80">
+              <strong>Requirement:</strong> {p.unlockRequirement} (Max at trait lv 30)
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- Section 7: Skill Book Consumption Appendix -->
+    <section class="space-y-6">
+      <div class="border-b border-slate-800 pb-4">
+        <span class="text-xs font-black uppercase tracking-wider text-slate-400">Database Table 10</span>
+        <h2 class="text-xl sm:text-2xl font-black text-white mt-0.5">Skill Book Consumption per Skill Level</h2>
+      </div>
+
+      <div class="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 overflow-hidden">
+        <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-3">
+          {SKILL_BOOK_CONSUMPTION.map((s) => (
+            <div key={s.skillLevel} class="p-3 rounded-2xl bg-slate-950 border border-slate-800 text-center">
+              <div class="text-[10px] text-slate-400 uppercase font-semibold">Skill Lv {s.skillLevel}</div>
+              <div class="text-base font-black text-amber-400 font-mono mt-0.5">{s.books.toLocaleString()}</div>
+              <div class="text-[9px] text-slate-500">Books</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  </div>
+</Layout>
+
