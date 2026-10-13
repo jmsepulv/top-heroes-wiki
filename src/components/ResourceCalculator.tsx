@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   LEVEL_MILESTONES,
   CASTLE_DATA,
@@ -10,7 +10,27 @@ import {
   TRAIT_RULES,
   EPIC_GLOBAL_PASSIVES,
 } from '../data/calculatorData';
-import { Calculator, Sparkles, Shield, Castle, Zap, Award, Star, BookOpen, Crown, Layers } from 'lucide-react';
+import { HEROES } from '../data/heroes';
+import { getPath } from '../utils/paths';
+import {
+  Calculator,
+  Sparkles,
+  Shield,
+  Castle,
+  Zap,
+  Award,
+  Star,
+  BookOpen,
+  Crown,
+  Layers,
+  Check,
+  Calendar,
+  TrendingUp,
+  Clock,
+  Save,
+  Target,
+  ArrowRight
+} from 'lucide-react';
 
 export default function ResourceCalculator() {
   const [activeTab, setActiveTab] = useState<'level' | 'stars' | 'awakening' | 'traits' | 'passives' | 'castle'>('stars');
@@ -25,8 +45,15 @@ export default function ResourceCalculator() {
   const [targetStar, setTargetStar] = useState<number>(15); // 1 to 15
 
   // Awakening Calculator State (Legendary heroes: tiers 0-3, 345 shards + 9 soul stones)
+  const [selectedAwakenHeroId, setSelectedAwakenHeroId] = useState<string>('pyromancer');
   const [startAwakeningIndex, setStartAwakeningIndex] = useState<number>(0);
   const [targetAwakeningIndex, setTargetAwakeningIndex] = useState<number>(AWAKENING_COSTS.length);
+  const [ownedShards, setOwnedShards] = useState<number>(0);
+  const [ownedSoulStones, setOwnedSoulStones] = useState<number>(0);
+  const [dailyGuildShards, setDailyGuildShards] = useState<number>(5);
+  const [weeklyEventShards, setWeeklyEventShards] = useState<number>(20);
+  const [rubyPullsPerWeek, setRubyPullsPerWeek] = useState<number>(10);
+  const [goalSavedToast, setGoalSavedToast] = useState<boolean>(false);
 
   // Trait Calculator State (4 traits, lv 1 to 30, 1160 shards total)
   const [traitStartLevel, setTraitStartLevel] = useState<number>(1);
@@ -91,6 +118,87 @@ export default function ResourceCalculator() {
 
     return { shards, soulStones };
   }, [startAwakeningIndex, targetAwakeningIndex]);
+
+  // Load saved awakening goal from localStorage
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('topheroes_awakening_goal');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (parsed.heroId && HEROES.some((h) => h.id === parsed.heroId)) {
+            setSelectedAwakenHeroId(parsed.heroId);
+          }
+          if (typeof parsed.startStep === 'number') setStartAwakeningIndex(parsed.startStep);
+          if (typeof parsed.targetStep === 'number') setTargetAwakeningIndex(parsed.targetStep);
+          if (typeof parsed.ownedShards === 'number') setOwnedShards(parsed.ownedShards);
+          if (typeof parsed.ownedSoulStones === 'number') setOwnedSoulStones(parsed.ownedSoulStones);
+          if (typeof parsed.dailyGuildShards === 'number') setDailyGuildShards(parsed.dailyGuildShards);
+          if (typeof parsed.weeklyEventShards === 'number') setWeeklyEventShards(parsed.weeklyEventShards);
+          if (typeof parsed.rubyPullsPerWeek === 'number') setRubyPullsPerWeek(parsed.rubyPullsPerWeek);
+        }
+      } catch (err) {
+        // ignore
+      }
+    }
+  }, []);
+
+  const saveGoal = () => {
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem(
+          'topheroes_awakening_goal',
+          JSON.stringify({
+            heroId: selectedAwakenHeroId,
+            startStep: startAwakeningIndex,
+            targetStep: targetAwakeningIndex,
+            ownedShards,
+            ownedSoulStones,
+            dailyGuildShards,
+            weeklyEventShards,
+            rubyPullsPerWeek,
+          })
+        );
+        setGoalSavedToast(true);
+        setTimeout(() => setGoalSavedToast(false), 2500);
+      } catch (err) {
+        // ignore
+      }
+    }
+  };
+
+  const awakenHero = useMemo(() => {
+    return HEROES.find((h) => h.id === selectedAwakenHeroId) || HEROES[0];
+  }, [selectedAwakenHeroId]);
+
+  const netShardsNeeded = Math.max(0, awakeningCosts.shards - ownedShards);
+  const netSoulStonesNeeded = Math.max(0, awakeningCosts.soulStones - ownedSoulStones);
+
+  // Daily shard velocity (Guild store + Weekly events + Tavern pulls)
+  const dailyShardPace = useMemo(() => {
+    const fromGuild = dailyGuildShards;
+    const fromEvents = weeklyEventShards / 7;
+    const fromTavern = (rubyPullsPerWeek * 0.7) / 7;
+    return Math.round((fromGuild + fromEvents + fromTavern) * 100) / 100;
+  }, [dailyGuildShards, weeklyEventShards, rubyPullsPerWeek]);
+
+  const daysToComplete = useMemo(() => {
+    if (netShardsNeeded <= 0) return 0;
+    if (dailyShardPace <= 0) return 999;
+    return Math.ceil(netShardsNeeded / dailyShardPace);
+  }, [netShardsNeeded, dailyShardPace]);
+
+  const completionDateString = useMemo(() => {
+    if (netShardsNeeded <= 0) return 'Goal Reached!';
+    if (daysToComplete >= 999) return 'Pace too slow';
+    const d = new Date(Date.now() + daysToComplete * 86400000);
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  }, [netShardsNeeded, daysToComplete]);
+
+  const awakeningProgressPct = useMemo(() => {
+    if (awakeningCosts.shards <= 0) return 100;
+    return Math.min(100, Math.round((ownedShards / awakeningCosts.shards) * 100));
+  }, [ownedShards, awakeningCosts.shards]);
 
   // 4. Calculations: Traits
   const traitCosts = useMemo(() => {
@@ -379,26 +487,64 @@ export default function ResourceCalculator() {
         </div>
       )}
 
-      {/* Tab: Awakening Calculator */}
+      {/* Tab: Awakening & Shard Goal Planner */}
       {activeTab === 'awakening' && (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          {/* Left: Hero Selector & Inventory Inputs (5 cols) */}
           <div className="lg:col-span-5 bg-slate-900/80 border border-slate-800 rounded-3xl p-6 md:p-8 backdrop-blur-md space-y-6">
-            <h2 className="text-xl font-black text-white flex items-center gap-2">
-              <Crown className="w-5 h-5 text-amber-400" />
-              Legendary Hero Awakening Costs
-            </h2>
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+              <h2 className="text-xl font-black text-white flex items-center gap-2">
+                <Crown className="w-5 h-5 text-amber-400" />
+                Awakening Goal Planner
+              </h2>
+              <button
+                onClick={saveGoal}
+                className="px-3 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-400 text-xs font-bold flex items-center gap-1.5 transition-all"
+                title="Save goal to device"
+              >
+                {goalSavedToast ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Save className="w-3.5 h-3.5" />}
+                <span>{goalSavedToast ? 'Saved!' : 'Save Goal'}</span>
+              </button>
+            </div>
 
-            <div className="space-y-4">
+            {/* Target Hero Card */}
+            <div>
+              <label className="block text-xs font-bold text-slate-300 uppercase mb-2">
+                Target Champion:
+              </label>
+              <div className="flex items-center gap-3 p-3 rounded-2xl bg-slate-950 border border-slate-800">
+                <div className="w-12 h-12 rounded-xl overflow-hidden bg-slate-900 border border-slate-700 shrink-0">
+                  <img src={getPath(awakenHero.avatar)} alt={awakenHero.name} className="w-full h-full object-cover" />
+                </div>
+                <div className="flex-grow min-w-0">
+                  <select
+                    value={selectedAwakenHeroId}
+                    onChange={(e) => setSelectedAwakenHeroId(e.target.value)}
+                    className="w-full bg-transparent font-bold text-sm text-white focus:outline-none"
+                  >
+                    {HEROES.map((h) => (
+                      <option key={h.id} value={h.id} className="bg-slate-950">
+                        {h.name} ({h.rarity.toUpperCase()} • {h.faction.toUpperCase()})
+                      </option>
+                    ))}
+                  </select>
+                  <p className="text-[11px] text-slate-400 truncate mt-0.5">{awakenHero.title}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Milestone Step Range */}
+            <div className="space-y-4 pt-1">
               <div>
                 <label className="block text-xs font-bold text-slate-300 uppercase mb-2">
-                  Current Awakening Step:
+                  Current Awakening Progress:
                 </label>
                 <select
                   value={startAwakeningIndex}
                   onChange={(e) => setStartAwakeningIndex(Number(e.target.value))}
                   className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500"
                 >
-                  <option value={0}>Unawakened (Base)</option>
+                  <option value={0}>Unawakened (Base Lv 0)</option>
                   {AWAKENING_COSTS.map((step, idx) => (
                     <option key={idx} value={idx + 1}>
                       Tier {step.tier} - Level {step.level}
@@ -409,7 +555,7 @@ export default function ResourceCalculator() {
 
               <div>
                 <label className="block text-xs font-bold text-slate-300 uppercase mb-2">
-                  Target Awakening Step:
+                  Target Awakening Goal:
                 </label>
                 <select
                   value={targetAwakeningIndex}
@@ -425,62 +571,244 @@ export default function ResourceCalculator() {
               </div>
             </div>
 
-            <div className="p-4 rounded-2xl bg-slate-950/70 border border-slate-800 text-xs text-slate-400 leading-relaxed space-y-2">
-              <div>
-                👑 <strong>Grand Totals:</strong> Fully maxing Awakening for a Legendary hero requires exactly <strong>{TOTAL_AWAKENING_COST.shards} Shards</strong> and <strong>{TOTAL_AWAKENING_COST.soulStones} Soul Stones</strong>.
+            {/* Current In-Inventory Reserves */}
+            <div className="p-4 rounded-2xl bg-slate-950/70 border border-slate-800 space-y-3">
+              <span className="text-[11px] font-bold text-slate-300 uppercase block tracking-wider">
+                Current Inventory In Bag (Deduct from Goal):
+              </span>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[10px] uppercase font-semibold text-slate-400 mb-1">
+                    Owned Shards
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="1000"
+                    value={ownedShards}
+                    onChange={(e) => setOwnedShards(Math.max(0, Number(e.target.value)))}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-1.5 text-sm font-bold text-white focus:outline-none focus:border-amber-500 font-mono"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] uppercase font-semibold text-slate-400 mb-1">
+                    Owned Soul Stones
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="20"
+                    value={ownedSoulStones}
+                    onChange={(e) => setOwnedSoulStones(Math.max(0, Number(e.target.value)))}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-1.5 text-sm font-bold text-purple-400 focus:outline-none focus:border-purple-500 font-mono"
+                  />
+                </div>
               </div>
+            </div>
+
+            {/* Daily Acquisition Velocity Sliders */}
+            <div className="space-y-3 pt-1">
+              <span className="text-[11px] font-bold text-slate-300 uppercase block tracking-wider">
+                Estimated Shard Velocity:
+              </span>
+
               <div>
-                👑 <strong>Soul Stone Transitions:</strong> Tier 0 unlock requires 1 Soul Stone, Tier 1 cap requires 2, Tier 2 cap requires 2, and Tier 3 cap requires 4.
+                <div className="flex justify-between text-xs text-slate-400 mb-1">
+                  <span>Daily Guild Store Purchases:</span>
+                  <span className="font-bold text-white font-mono">{dailyGuildShards} shards/day</span>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="15"
+                  step="1"
+                  value={dailyGuildShards}
+                  onChange={(e) => setDailyGuildShards(Number(e.target.value))}
+                  className="w-full accent-amber-500 bg-slate-950 rounded-lg h-1.5"
+                />
+              </div>
+
+              <div>
+                <div className="flex justify-between text-xs text-slate-400 mb-1">
+                  <span>Weekly Event & Arena Rewards:</span>
+                  <span className="font-bold text-white font-mono">{weeklyEventShards} shards/wk</span>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="50"
+                  step="5"
+                  value={weeklyEventShards}
+                  onChange={(e) => setWeeklyEventShards(Number(e.target.value))}
+                  className="w-full accent-amber-500 bg-slate-950 rounded-lg h-1.5"
+                />
+              </div>
+
+              <div>
+                <div className="flex justify-between text-xs text-slate-400 mb-1">
+                  <span>Tavern Summons / Ruby Pace:</span>
+                  <span className="font-bold text-white font-mono">{rubyPullsPerWeek} pulls/wk</span>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="40"
+                  step="5"
+                  value={rubyPullsPerWeek}
+                  onChange={(e) => setRubyPullsPerWeek(Number(e.target.value))}
+                  className="w-full accent-amber-500 bg-slate-950 rounded-lg h-1.5"
+                />
+              </div>
+
+              <div className="text-[11px] text-slate-500 flex items-center justify-between pt-1">
+                <span>Calculated Daily Inflow:</span>
+                <span className="font-bold text-amber-400 font-mono">+{dailyShardPace} shards / day</span>
               </div>
             </div>
           </div>
 
+          {/* Right: Timeline Diagnostics & Resource Needs (7 cols) */}
           <div className="lg:col-span-7 space-y-6">
-            <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 md:p-8 backdrop-blur-md">
-              <h3 className="text-lg font-black text-white mb-6">Required Awakening Resources</h3>
+            {/* Visual Breakthrough Stepper Banner */}
+            <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 backdrop-blur-md space-y-4">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center justify-between">
+                <span>Awakening Breakthrough Tiers</span>
+                <span className="text-purple-400">Total: 345 Shards + 9 💎</span>
+              </h3>
 
-              <div className="grid grid-cols-2 gap-4 mb-6">
-                <div className="bg-slate-950 p-6 rounded-2xl border border-amber-500/40 text-center">
-                  <div className="text-xs uppercase font-bold text-slate-400 mb-1">Hero Shards</div>
-                  <div className="text-4xl font-black text-amber-400 font-mono">
-                    {awakeningCosts.shards}
-                  </div>
-                  <div className="text-xs text-amber-300/80 mt-1">Total Shards</div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs">
+                <div className={`p-3 rounded-2xl border transition-all ${targetAwakeningIndex >= 1 ? 'bg-amber-500/10 border-amber-500/40' : 'bg-slate-950 border-slate-800 opacity-60'}`}>
+                  <span className="text-[10px] font-black uppercase text-amber-400 block mb-1">Tier 0 (Base)</span>
+                  <div className="font-bold text-white text-xs">Tree Unlock</div>
+                  <span className="text-[10px] text-slate-400 block mt-1">5 Shards • 1 💎</span>
                 </div>
 
-                <div className="bg-slate-950 p-6 rounded-2xl border border-purple-500/40 text-center">
-                  <div className="text-xs uppercase font-bold text-slate-400 mb-1">Soul Stones</div>
-                  <div className="text-4xl font-black text-purple-400 font-mono">
-                    {awakeningCosts.soulStones}
+                <div className={`p-3 rounded-2xl border transition-all ${targetAwakeningIndex >= 7 ? 'bg-amber-500/10 border-amber-500/40' : 'bg-slate-950 border-slate-800 opacity-60'}`}>
+                  <span className="text-[10px] font-black uppercase text-amber-400 block mb-1">Tier 1 Cap</span>
+                  <div className="font-bold text-white text-xs">Active Mastery</div>
+                  <span className="text-[10px] text-slate-400 block mt-1">+65 Shards • 2 💎</span>
+                </div>
+
+                <div className={`p-3 rounded-2xl border transition-all ${targetAwakeningIndex >= 13 ? 'bg-amber-500/10 border-amber-500/40' : 'bg-slate-950 border-slate-800 opacity-60'}`}>
+                  <span className="text-[10px] font-black uppercase text-amber-400 block mb-1">Tier 2 Cap</span>
+                  <div className="font-bold text-white text-xs">Passive Boost</div>
+                  <span className="text-[10px] text-slate-400 block mt-1">+105 Shards • 2 💎</span>
+                </div>
+
+                <div className={`p-3 rounded-2xl border transition-all ${targetAwakeningIndex >= 19 ? 'bg-purple-500/10 border-purple-500/40' : 'bg-slate-950 border-slate-800 opacity-60'}`}>
+                  <span className="text-[10px] font-black uppercase text-purple-400 block mb-1">Tier 3 Apex</span>
+                  <div className="font-bold text-white text-xs">Ultimate Surge</div>
+                  <span className="text-[10px] text-slate-400 block mt-1">+170 Shards • 4 💎</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Net Deficit & Progress Card */}
+            <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 md:p-8 backdrop-blur-md space-y-6">
+              <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h3 className="text-lg font-black text-white">Net Resources Required</h3>
+                <span className="text-xs text-slate-400">Inventory deducted</span>
+              </div>
+
+              {/* Resource Numbers */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-slate-950 p-5 rounded-2xl border border-amber-500/40 text-center space-y-1">
+                  <div className="text-xs uppercase font-bold text-slate-400">Remaining Shards</div>
+                  <div className="text-4xl font-black text-amber-400 font-mono">
+                    {netShardsNeeded}
                   </div>
-                  <div className="text-xs text-purple-300/80 mt-1">Tier Transition Stones</div>
+                  <div className="text-[11px] text-slate-400">
+                    Gross: {awakeningCosts.shards} ({ownedShards} in Bag)
+                  </div>
+                </div>
+
+                <div className="bg-slate-950 p-5 rounded-2xl border border-purple-500/40 text-center space-y-1">
+                  <div className="text-xs uppercase font-bold text-slate-400">Remaining Soul Stones</div>
+                  <div className="text-4xl font-black text-purple-400 font-mono">
+                    {netSoulStonesNeeded}
+                  </div>
+                  <div className="text-[11px] text-slate-400">
+                    Gross: {awakeningCosts.soulStones} ({ownedSoulStones} in Bag)
+                  </div>
                 </div>
               </div>
 
-              <h4 className="text-xs uppercase font-bold text-slate-400 tracking-wider mb-3">
-                Full Step Schedule:
-              </h4>
-              <div className="overflow-x-auto max-h-72 overflow-y-auto pr-1">
-                <table className="w-full text-xs text-left text-slate-300">
-                  <thead className="bg-slate-950 text-slate-400 uppercase font-semibold sticky top-0">
-                    <tr>
-                      <th className="p-2.5 rounded-l-lg">Tier</th>
-                      <th className="p-2.5">Level</th>
-                      <th className="p-2.5">Shards</th>
-                      <th className="p-2.5 rounded-r-lg">Soul Stones</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-800">
-                    {AWAKENING_COSTS.map((c, i) => (
-                      <tr key={i} className={`hover:bg-slate-800/40 ${i >= startAwakeningIndex && i < targetAwakeningIndex ? 'bg-amber-500/5 font-semibold text-white' : 'text-slate-500'}`}>
-                        <td className="p-2.5">Tier {c.tier}</td>
-                        <td className="p-2.5">Lv {c.level}</td>
-                        <td className="p-2.5 font-mono">{c.shards}</td>
-                        <td className="p-2.5 font-mono text-purple-400">{c.soulStones > 0 ? `${c.soulStones} 💎` : '—'}</td>
+              {/* Progress Bar toward Goal */}
+              <div className="space-y-1.5">
+                <div className="flex justify-between text-xs">
+                  <span className="text-slate-400">Shard Goal Completion:</span>
+                  <span className="font-bold text-amber-400 font-mono">{awakeningProgressPct}%</span>
+                </div>
+                <div className="w-full bg-slate-950 rounded-full h-3 overflow-hidden border border-slate-800">
+                  <div
+                    className="bg-gradient-to-r from-amber-500 to-orange-500 h-full rounded-full transition-all duration-500"
+                    style={{ width: `${awakeningProgressPct}%` }}
+                  ></div>
+                </div>
+              </div>
+
+              {/* Projected Timeline Forecast Banner */}
+              <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-500/10 via-purple-500/10 to-indigo-500/10 border border-amber-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center shrink-0">
+                    <Calendar className="w-5 h-5 text-amber-400" />
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-bold uppercase text-slate-400 block">
+                      Estimated Completion Time:
+                    </span>
+                    <span className="text-base font-black text-white">
+                      {daysToComplete === 0 ? 'Goal Met!' : `${daysToComplete} Days (${completionDateString})`}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="text-left sm:text-right">
+                  <span className="text-[10px] font-bold uppercase text-slate-400 block">
+                    Instant Ruby Rush Cost:
+                  </span>
+                  <span className="text-sm font-black text-purple-300 font-mono">
+                    ~{(netShardsNeeded * 60).toLocaleString()} Rubies
+                  </span>
+                </div>
+              </div>
+
+              {/* Step by Step Schedule Table */}
+              <div>
+                <h4 className="text-xs uppercase font-bold text-slate-400 tracking-wider mb-3">
+                  Step-by-Step Level Costs:
+                </h4>
+                <div className="overflow-x-auto max-h-56 overflow-y-auto pr-1">
+                  <table className="w-full text-xs text-left text-slate-300">
+                    <thead className="bg-slate-950 text-slate-400 uppercase font-semibold sticky top-0">
+                      <tr>
+                        <th className="p-2.5 rounded-l-lg">Tier</th>
+                        <th className="p-2.5">Level</th>
+                        <th className="p-2.5">Shards</th>
+                        <th className="p-2.5 rounded-r-lg">Soul Stones</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody className="divide-y divide-slate-800">
+                      {AWAKENING_COSTS.map((c, i) => (
+                        <tr
+                          key={i}
+                          className={`hover:bg-slate-800/40 ${
+                            i >= startAwakeningIndex && i < targetAwakeningIndex
+                              ? 'bg-amber-500/5 font-semibold text-white'
+                              : 'text-slate-500'
+                          }`}
+                        >
+                          <td className="p-2.5">Tier {c.tier}</td>
+                          <td className="p-2.5">Lv {c.level}</td>
+                          <td className="p-2.5 font-mono">{c.shards}</td>
+                          <td className="p-2.5 font-mono text-purple-400">
+                            {c.soulStones > 0 ? `${c.soulStones} 💎` : '—'}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           </div>
