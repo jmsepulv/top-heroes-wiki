@@ -11,3 +11,4 @@ export function getPath(path: string = '/'): string {
 
   return base.endsWith('/') ? `${base}${cleanPath}` : `${base}/${cleanPath}`;
 }
+

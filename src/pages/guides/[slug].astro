@@ -1,0 +1,126 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { GUIDES } from '../../data/guides';
+import { getPath } from '../../utils/paths';
+
+export function getStaticPaths() {
+  return GUIDES.map((guide) => ({
+    params: { slug: guide.slug },
+    props: { guide },
+  }));
+}
+
+const { guide } = Astro.props;
+
+// Related other guides
+const relatedGuides = GUIDES.filter((g) => g.slug !== guide.slug).slice(0, 2);
+---
+
+<Layout
+  title={`${guide.title} | Top Heroes Guide`}
+  description={guide.summary}
+>
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <!-- Breadcrumbs -->
+    <nav class="flex items-center gap-2 text-xs text-slate-400 mb-6">
+      <a href={getPath('/')} class="hover:text-white transition-colors">Home</a>
+      <span>/</span>
+      <a href={getPath('/guides')} class="hover:text-white transition-colors">Guides</a>
+      <span>/</span>
+      <span class="text-white font-semibold truncate max-w-xs">{guide.title}</span>
+    </nav>
+
+    <!-- Guide Header -->
+    <header class="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 md:p-10 mb-10 shadow-2xl backdrop-blur-md">
+      <div class="flex flex-wrap items-center gap-2.5 mb-4">
+        <span class="text-xs font-bold uppercase px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/40">
+          {guide.category} Guide
+        </span>
+        <span class="text-xs text-slate-400 bg-slate-800 px-3 py-1 rounded-full font-medium">
+          {guide.readTime}
+        </span>
+        <span class="text-xs text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-3 py-1 rounded-full font-semibold">
+          Verified for Patch {guide.patchVersion}
+        </span>
+      </div>
+
+      <h1 class="text-3xl md:text-5xl font-black text-white leading-tight mb-4">
+        {guide.title}
+      </h1>
+
+      <p class="text-base text-slate-300 leading-relaxed border-l-4 border-amber-500 pl-4 py-1 italic bg-slate-950/40 rounded-r-xl">
+        {guide.summary}
+      </p>
+
+      <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
+        <span>Published by <strong>Top Heroes Strategy Guild</strong></span>
+        <span>Last Updated: <strong>{guide.lastUpdated}</strong></span>
+      </div>
+    </header>
+
+    <!-- Guide Content Sections -->
+    <article class="space-y-10">
+      {guide.sections.map((section) => (
+        <section class="bg-slate-900/60 border border-slate-800 rounded-3xl p-6 md:p-8 backdrop-blur-md">
+          <h2 class="text-2xl font-black text-white mb-4 flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
+            {section.title}
+          </h2>
+
+          <p class="text-slate-300 text-sm md:text-base leading-relaxed mb-6">
+            {section.content}
+          </p>
+
+          {section.bulletPoints && (
+            <ul class="space-y-2.5 mb-6 text-sm text-slate-200 bg-slate-950/70 p-5 rounded-2xl border border-slate-800">
+              {section.bulletPoints.map((point) => (
+                <li class="flex items-start gap-2.5">
+                  <span class="text-amber-400 font-bold text-base leading-none mt-0.5">•</span>
+                  <span>{point}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          {section.callout && (
+            <div class={`p-4 rounded-2xl border text-xs md:text-sm leading-relaxed ${
+              section.callout.type === 'tip'
+                ? 'bg-emerald-950/30 border-emerald-500/40 text-emerald-200'
+                : section.callout.type === 'warning'
+                ? 'bg-red-950/30 border-red-500/40 text-red-200'
+                : 'bg-amber-950/30 border-amber-500/40 text-amber-200'
+            }`}>
+              <strong class="uppercase font-bold tracking-wider mr-1">
+                {section.callout.type === 'tip' ? '💡 Strategic Tip:' : section.callout.type === 'warning' ? '⚠️ Caution:' : '⭐ Key Takeaway:'}
+              </strong>
+              {section.callout.text}
+            </div>
+          )}
+        </section>
+      ))}
+    </article>
+
+    <!-- Bottom Navigation / Related Guides -->
+    <div class="mt-16 pt-10 border-t border-slate-800">
+      <h3 class="text-xl font-black text-white mb-6">Recommended Next Reads</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        {relatedGuides.map((rel) => (
+          <a
+            href={getPath(`/guides/${rel.slug}`)}
+            class="group bg-slate-900/60 border border-slate-800 hover:border-amber-500/50 rounded-2xl p-5 transition-all hover:-translate-y-1"
+          >
+            <span class="text-[10px] font-bold uppercase text-amber-400 block mb-1">
+              {rel.category} Guide
+            </span>
+            <h4 class="text-base font-bold text-white group-hover:text-amber-400 transition-colors mb-2">
+              {rel.title}
+            </h4>
+            <p class="text-xs text-slate-400 line-clamp-2">
+              {rel.summary}
+            </p>
+          </a>
+        ))}
+      </div>
+    </div>
+  </div>
+</Layout>

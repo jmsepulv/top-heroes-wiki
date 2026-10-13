@@ -1,0 +1,13 @@
+---
+import Layout from '../layouts/Layout.astro';
+import EventCalendar from '../components/EventCalendar';
+---
+
+<Layout
+  title="Top Heroes Events Calendar & Weekly Reset Timers | Strategy Guide"
+  description="Live event countdowns for Top Heroes converted to your local timezone. Server reset times, Guild War schedules, Castle Ruins expeditions, and Primal Boss events."
+>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+    <EventCalendar client:load />
+  </div>
+</Layout>

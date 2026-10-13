@@ -29,7 +29,7 @@ const isActive = (path: string) => {
     </a>
 
     <!-- Nav Links -->
-    <nav class="hidden md:flex items-center gap-1">
+    <nav class="hidden lg:flex items-center gap-1">
       <a
         href={getPath('/')}
         class={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
@@ -53,7 +53,7 @@ const isActive = (path: string) => {
           isActive('/heroes') ? 'text-white bg-slate-800 shadow-sm' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
         }`}
       >
-        Heroes Directory
+        Heroes
       </a>
       <a
         href={getPath('/lineups')}
@@ -61,11 +61,36 @@ const isActive = (path: string) => {
           isActive('/lineups') ? 'text-white bg-slate-800 shadow-sm' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
         }`}
       >
-        Meta Lineups
+        Lineups
+      </a>
+      <a
+        href={getPath('/events')}
+        class={`px-3 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 ${
+          isActive('/events') ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/30' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
+        }`}
+      >
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span>Events</span>
+      </a>
+      <a
+        href={getPath('/guides')}
+        class={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+          isActive('/guides') ? 'text-white bg-slate-800 shadow-sm' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
+        }`}
+      >
+        Guides
+      </a>
+      <a
+        href={getPath('/changelog')}
+        class={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+          isActive('/changelog') ? 'text-white bg-slate-800 shadow-sm' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
+        }`}
+      >
+        Changelog
       </a>
     </nav>
 
-    <!-- Patch Badge & Mobile CTA -->
+    <!-- Patch Badge & CTA -->
     <div class="flex items-center gap-3">
       <div class="hidden sm:flex items-center gap-2 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold">
         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
