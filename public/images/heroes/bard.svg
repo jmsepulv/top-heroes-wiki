@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="100%" height="100%">
+  <defs>
+    <radialGradient id="bgGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#1e3a8a"/>
+      <stop offset="100%" stop-color="#0b0f19"/>
+    </radialGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#b45309"/>
+    </linearGradient>
+    <linearGradient id="glowGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#60a5fa" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#3b82f6" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="400" fill="url(#bgGrad)"/>
+  <circle cx="200" cy="200" r="160" fill="url(#glowGrad)"/>
+  <circle cx="200" cy="200" r="150" fill="none" stroke="url(#goldGrad)" stroke-width="6"/>
+  <!-- Lute / Harp Body -->
+  <path d="M160 120 C140 180 120 240 160 280 C200 320 260 280 260 220 C260 170 210 140 210 100 Z" fill="url(#goldGrad)"/>
+  <circle cx="200" cy="220" r="28" fill="#1e1e2f"/>
+  <rect x="180" y="80" width="16" height="120" rx="4" fill="#78350f"/>
+  <!-- Strings -->
+  <line x1="184" y1="80" x2="188" y2="280" stroke="#fef3c7" stroke-width="2"/>
+  <line x1="188" y1="80" x2="200" y2="280" stroke="#fef3c7" stroke-width="2"/>
+  <line x1="192" y1="80" x2="212" y2="280" stroke="#fef3c7" stroke-width="2"/>
+  <!-- Musical Floating Notes -->
+  <path d="M270 120 C270 110 290 110 290 100 L310 105 L310 135 C310 145 290 145 290 135 Z" fill="#60a5fa"/>
+  <path d="M100 160 C100 150 120 150 120 140 L135 145 L135 170 C135 180 115 180 115 170 Z" fill="#fbbf24"/>
+  <text x="200" y="360" font-family="system-ui, sans-serif" font-size="22" font-weight="900" fill="#fef3c7" text-anchor="middle" letter-spacing="3">BARD</text>
+</svg>

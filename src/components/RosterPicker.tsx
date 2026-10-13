@@ -366,7 +366,7 @@ export default function RosterPicker() {
                   <div className="flex flex-col items-center text-center">
                     <div className="relative w-16 h-16 rounded-xl overflow-hidden mb-2 border-2 border-slate-800 group-hover:border-amber-500/40 transition-colors bg-slate-950">
                       <img
-                        src={hero.avatar}
+                        src={getPath(hero.avatar)}
                         alt={hero.name}
                         className="w-full h-full object-cover"
                         loading="lazy"
@@ -519,7 +519,7 @@ export default function RosterPicker() {
                               >
                                 <div className="w-full aspect-square rounded overflow-hidden bg-slate-900 mb-1">
                                   <img
-                                    src={placedHero?.avatar}
+                                    src={placedHero ? getPath(placedHero.avatar) : undefined}
                                     alt={placedHero?.name}
                                     className={`w-full h-full object-cover ${!filled ? 'grayscale opacity-50' : ''}`}
                                   />

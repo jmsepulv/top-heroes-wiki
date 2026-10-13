@@ -10,7 +10,7 @@ export const HEROES: Hero[] = [
     rarity: 'mythic',
     role: 'tank',
     damageType: 'physical',
-    avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=paragon&backgroundColor=1e3a8a',
+    avatar: '/images/heroes/paragon.jpg',
     description: 'The supreme bastion of the League. Paragon stands on the frontline, generating shields that protect the entire formation while delivering punishing counter-attacks.',
     baseStats: { hp: 142000, atk: 11400, def: 8900, spd: 115 },
     skills: [
@@ -42,7 +42,7 @@ export const HEROES: Hero[] = [
     rarity: 'legendary',
     role: 'tank',
     damageType: 'physical',
-    avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=secret_keeper&backgroundColor=1d4ed8',
+    avatar: '/images/heroes/secret_keeper.jpg',
     description: 'A steadfast knight sworn to silence. Absorbs incoming backline damage and counter-charges charging assassin units.',
     baseStats: { hp: 128000, atk: 9800, def: 8100, spd: 110 },
     skills: [
@@ -74,7 +74,7 @@ export const HEROES: Hero[] = [
     rarity: 'legendary',
     role: 'dps',
     damageType: 'magic',
-    avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=pyromancer&backgroundColor=b91c1c',
+    avatar: '/images/heroes/pyromancer.jpg',
     description: 'The premier Magic carry for the League faction. Unleashes devastating cascading meteors that melt clustered enemy lines.',
     baseStats: { hp: 74000, atk: 24500, def: 4200, spd: 130 },
     skills: [
@@ -106,7 +106,7 @@ export const HEROES: Hero[] = [
     rarity: 'legendary',
     role: 'dps',
     damageType: 'magic',
-    avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=astrologer&backgroundColor=312e81',
+    avatar: '/images/heroes/astrologer.jpg',
     description: 'Channels celestial constellations to bombard enemy lines. Stacks stellar resonance that increases team magic damage output.',
     baseStats: { hp: 76000, atk: 23800, def: 4400, spd: 128 },
     skills: [
@@ -138,7 +138,7 @@ export const HEROES: Hero[] = [
     rarity: 'epic',
     role: 'support',
     damageType: 'magic',
-    avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=bard&backgroundColor=2563eb',
+    avatar: '/images/heroes/bard.svg',
     description: 'Plays invigorating melodies that accelerate team ultimate energy and buff party attack speed.',
     baseStats: { hp: 82000, atk: 12200, def: 4900, spd: 125 },
     skills: [
@@ -170,7 +170,7 @@ export const HEROES: Hero[] = [
     rarity: 'epic',
     role: 'support',
     damageType: 'magic',
-    avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=bishop&backgroundColor=1e40af',
+    avatar: '/images/heroes/bishop.svg',
     description: 'Dedicated healer and cleanser. Provides massive sustained health pools for tanks facing heavy burst damage.',
     baseStats: { hp: 88000, atk: 11000, def: 5200, spd: 118 },
     skills: [
@@ -204,7 +204,7 @@ export const HEROES: Hero[] = [
     rarity: 'mythic',
     role: 'control',
     damageType: 'magic',
-    avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=forest_maiden&backgroundColor=065f46',
+    avatar: '/images/heroes/forest_maiden.jpg',
     description: 'The undisputed crowd-control queen of the Nature faction. Roots entire formations, heals allies continuously, and turns the tide of prolonged battles.',
     baseStats: { hp: 110000, atk: 18200, def: 6200, spd: 134 },
     skills: [
@@ -236,7 +236,7 @@ export const HEROES: Hero[] = [
     rarity: 'legendary',
     role: 'dps',
     damageType: 'physical',
-    avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=windwalker&backgroundColor=047857',
+    avatar: '/images/heroes/windwalker.jpg',
     description: 'Swift marksman whose piercing arrows bypass enemy frontline armor to assassinate vulnerable squishy backline casters.',
     baseStats: { hp: 78000, atk: 25800, def: 4100, spd: 142 },
     skills: [
@@ -268,7 +268,7 @@ export const HEROES: Hero[] = [
     rarity: 'legendary',
     role: 'dps',
     damageType: 'magic',
-    avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=sage&backgroundColor=059669',
+    avatar: '/images/heroes/sage.jpg',
     description: 'Channels primal nature storms. Saps magic defense from the enemy team, turning them into easy targets for magical burst.',
     baseStats: { hp: 86000, atk: 22100, def: 4700, spd: 126 },
     skills: [
@@ -300,7 +300,7 @@ export const HEROES: Hero[] = [
     rarity: 'epic',
     role: 'tank',
     damageType: 'physical',
-    avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=treant&backgroundColor=15803d',
+    avatar: '/images/heroes/treant.jpg',
     description: 'An ancient sentient oak that absorbs massive punishment. Regenerates health constantly while rooted in battle.',
     baseStats: { hp: 135000, atk: 8600, def: 8500, spd: 95 },
     skills: [
@@ -332,7 +332,7 @@ export const HEROES: Hero[] = [
     rarity: 'epic',
     role: 'support',
     damageType: 'magic',
-    avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=druid&backgroundColor=166534',
+    avatar: '/images/heroes/druid.svg',
     description: 'Channels gentle life streams to keep frontliners healthy. Provides persistent regeneration ticks that counteract poison and bleed.',
     baseStats: { hp: 86000, atk: 12500, def: 5100, spd: 120 },
     skills: [
@@ -364,7 +364,7 @@ export const HEROES: Hero[] = [
     rarity: 'legendary',
     role: 'support',
     damageType: 'physical',
-    avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=pathfinder&backgroundColor=14532d',
+    avatar: '/images/heroes/pathfinder.svg',
     description: 'Provides tactical recon and team speed boosts. Marks key enemy targets so allies focus fire and blow them up.',
     baseStats: { hp: 92000, atk: 17500, def: 5800, spd: 138 },
     skills: [
@@ -398,7 +398,7 @@ export const HEROES: Hero[] = [
     rarity: 'mythic',
     role: 'dps',
     damageType: 'physical',
-    avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=desert_prince&backgroundColor=7f1d1d',
+    avatar: '/images/heroes/desert_prince.jpg',
     description: 'The premier frontline bruiser / hypercarry of the Horde. Spins with dual scimitars, cutting through formations with devastating lifesteal and execute damage.',
     baseStats: { hp: 122000, atk: 26500, def: 6800, spd: 136 },
     skills: [
@@ -430,7 +430,7 @@ export const HEROES: Hero[] = [
     rarity: 'legendary',
     role: 'dps',
     damageType: 'magic',
-    avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=warlock&backgroundColor=991b1b',
+    avatar: '/images/heroes/warlock.jpg',
     description: 'A terrifying dark spellcaster who infects enemy squads with spreading curses and damage over time that ignores armor.',
     baseStats: { hp: 75000, atk: 24200, def: 4300, spd: 124 },
     skills: [
@@ -462,7 +462,7 @@ export const HEROES: Hero[] = [
     rarity: 'legendary',
     role: 'control',
     damageType: 'magic',
-    avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=soulmancer&backgroundColor=b91c1c',
+    avatar: '/images/heroes/soulmancer.jpg',
     description: 'Chains souls together and transfers damage among them. Stuns frontliners while siphoning their offensive stats.',
     baseStats: { hp: 84000, atk: 21500, def: 5200, spd: 130 },
     skills: [
@@ -494,7 +494,7 @@ export const HEROES: Hero[] = [
     rarity: 'legendary',
     role: 'dps',
     damageType: 'physical',
-    avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=headhunter&backgroundColor=991b1b',
+    avatar: '/images/heroes/headhunter.jpg',
     description: 'A vicious single-target executioner that targets isolated enemy units with crushing axe blows and heavy bleed.',
     baseStats: { hp: 80000, atk: 25200, def: 4400, spd: 135 },
     skills: [
@@ -526,7 +526,7 @@ export const HEROES: Hero[] = [
     rarity: 'epic',
     role: 'tank',
     damageType: 'physical',
-    avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=barbarian&backgroundColor=7f1d1d',
+    avatar: '/images/heroes/barbarian.jpg',
     description: 'A raging frontline berserker who turns pain into power. His attack speed and damage increase as his HP drops.',
     baseStats: { hp: 138000, atk: 12000, def: 7200, spd: 105 },
     skills: [
@@ -558,7 +558,7 @@ export const HEROES: Hero[] = [
     rarity: 'epic',
     role: 'support',
     damageType: 'magic',
-    avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=shaman&backgroundColor=450a0a',
+    avatar: '/images/heroes/shaman.jpg',
     description: 'Plants mystical totems that bestow lethal crit buffs, death-defiance wards, and intermittent chain lightning.',
     baseStats: { hp: 86000, atk: 13000, def: 5200, spd: 122 },
     skills: [

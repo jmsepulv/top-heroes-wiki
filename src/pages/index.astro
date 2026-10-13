@@ -155,7 +155,7 @@ const featuredLineups = LINEUPS.filter((l) => l.tier === 'S+').slice(0, 3);
               <div class="flex items-center gap-2">
                 {HEROES.filter((h) => h.faction === f.id).slice(0, 4).map((h) => (
                   <a href={getPath(`/heroes/${h.id}`)} class="w-10 h-10 rounded-lg overflow-hidden border border-slate-800 hover:border-amber-400 transition-colors bg-slate-950" title={h.name}>
-                    <img src={h.avatar} alt={h.name} class="w-full h-full object-cover" />
+                    <img src={getPath(h.avatar)} alt={h.name} class="w-full h-full object-cover" />
                   </a>
                 ))}
               </div>

@@ -262,7 +262,7 @@ export default function GearBuilder() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-5">
             <div className="flex items-center gap-3">
               <div className="w-14 h-14 rounded-2xl overflow-hidden bg-slate-950 border-2 border-amber-500/50 shadow-md">
-                <img src={selectedHero.avatar} alt={selectedHero.name} className="w-full h-full object-cover" />
+                <img src={getPath(selectedHero.avatar)} alt={selectedHero.name} className="w-full h-full object-cover" />
               </div>
               <div>
                 <select
@@ -494,3 +494,4 @@ export default function GearBuilder() {
     </div>
   );
 }
+

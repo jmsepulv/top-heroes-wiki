@@ -134,7 +134,7 @@ const getTierColor = (tier: string) => {
                       </div>
 
                       <a href={getPath(`/heroes/${hero.id}`)} class="w-16 h-16 rounded-xl overflow-hidden bg-slate-950 my-1 border border-slate-700 hover:border-amber-400 transition-colors">
-                        <img src={hero.avatar} alt={hero.name} class="w-full h-full object-cover" />
+                        <img src={getPath(hero.avatar)} alt={hero.name} class="w-full h-full object-cover" />
                       </a>
 
                       <a href={getPath(`/heroes/${hero.id}`)} class="text-xs font-bold text-white hover:text-amber-400 transition-colors mt-1">

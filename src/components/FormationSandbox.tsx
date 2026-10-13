@@ -195,7 +195,7 @@ export default function FormationSandbox() {
                           <X className="w-3 h-3" />
                         </button>
                         <div className="w-16 h-16 rounded-xl overflow-hidden bg-slate-900 mx-auto mb-2 border border-slate-800">
-                          <img src={hero.avatar} alt={hero.name} className="w-full h-full object-cover" />
+                          <img src={getPath(hero.avatar)} alt={hero.name} className="w-full h-full object-cover" />
                         </div>
                         <div className="text-sm font-bold text-white truncate">{hero.name}</div>
                         <div className="text-[11px] text-slate-400 capitalize">{hero.role} • {hero.faction}</div>
@@ -250,7 +250,7 @@ export default function FormationSandbox() {
                           <X className="w-3 h-3" />
                         </button>
                         <div className="w-12 h-12 rounded-xl overflow-hidden bg-slate-900 mx-auto mb-1.5 border border-slate-800">
-                          <img src={hero.avatar} alt={hero.name} className="w-full h-full object-cover" />
+                          <img src={getPath(hero.avatar)} alt={hero.name} className="w-full h-full object-cover" />
                         </div>
                         <div className="text-xs font-bold text-white truncate">{hero.name}</div>
                         <div className="text-[10px] text-slate-400 capitalize">{hero.role}</div>
@@ -294,7 +294,7 @@ export default function FormationSandbox() {
                       }`}
                     >
                       <div className="w-10 h-10 rounded-lg overflow-hidden bg-slate-950 mx-auto mb-1">
-                        <img src={h.avatar} alt={h.name} className="w-full h-full object-cover" />
+                        <img src={getPath(h.avatar)} alt={h.name} className="w-full h-full object-cover" />
                       </div>
                       <div className="text-[10px] font-bold text-white truncate">{h.name.split(' ')[0]}</div>
                       <div className="text-[9px] text-slate-400 uppercase">{h.faction}</div>
