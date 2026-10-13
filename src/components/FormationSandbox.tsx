@@ -1,14 +1,33 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { HEROES, type Hero } from '../data/heroes';
 import { calculateAura, getFactionById } from '../data/factions';
-import { Shield, Swords, Sparkles, Plus, X, RotateCcw, Share2, Check, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import {
+  Shield,
+  Swords,
+  Sparkles,
+  Plus,
+  X,
+  RotateCcw,
+  Share2,
+  Check,
+  AlertTriangle,
+  CheckCircle2,
+  Download,
+  Image,
+  Loader2,
+  Copy
+} from 'lucide-react';
 import { getPath } from '../utils/paths';
+import { downloadFormationCard, copyFormationCardToClipboard } from '../utils/cardExporter';
 
 export default function FormationSandbox() {
   // 6 slots: index 0 & 1 = Front, index 2,3,4,5 = Back
   const [team, setTeam] = useState<(string | null)[]>([null, null, null, null, null, null]);
   const [selectedSlotIndex, setSelectedSlotIndex] = useState<number | null>(null);
   const [copied, setCopied] = useState<boolean>(false);
+  const [isExporting, setIsExporting] = useState<boolean>(false);
+  const [cardDownloaded, setCardDownloaded] = useState<boolean>(false);
+  const [cardCopied, setCardCopied] = useState<boolean>(false);
 
   // Load from URL if present
   useEffect(() => {
@@ -117,10 +136,77 @@ export default function FormationSandbox() {
     return { checks, tanks, carries, supports, controllers, physical, magic };
   }, [activeHeroes]);
 
+  const teamTotals = useMemo(() => {
+    return activeHeroes.reduce(
+      (acc, h) => {
+        acc.atk += h.baseStats.atk;
+        acc.hp += h.baseStats.hp;
+        acc.def += h.baseStats.def;
+        return acc;
+      },
+      { atk: 0, hp: 0, def: 0 }
+    );
+  }, [activeHeroes]);
+
+  const handleDownloadCard = async () => {
+    if (activeHeroes.length === 0) return;
+    setIsExporting(true);
+    try {
+      const teamHeroes = team.map((id) => (id ? HEROES.find((h) => h.id === id) || null : null));
+      await downloadFormationCard({
+        heroes: teamHeroes,
+        auraTitle: auraAnalysis.title,
+        auraBonusText: auraAnalysis.description || '',
+        totalAtk: teamTotals.atk,
+        totalHp: teamTotals.hp,
+        totalDef: teamTotals.def,
+      });
+      setCardDownloaded(true);
+      setTimeout(() => setCardDownloaded(false), 2500);
+    } catch (err) {
+      console.error('Failed to export card image:', err);
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const handleCopyCard = async () => {
+    if (activeHeroes.length === 0) return;
+    setIsExporting(true);
+    try {
+      const teamHeroes = team.map((id) => (id ? HEROES.find((h) => h.id === id) || null : null));
+      const success = await copyFormationCardToClipboard({
+        heroes: teamHeroes,
+        auraTitle: auraAnalysis.title,
+        auraBonusText: auraAnalysis.description || '',
+        totalAtk: teamTotals.atk,
+        totalHp: teamTotals.hp,
+        totalDef: teamTotals.def,
+      });
+      if (success) {
+        setCardCopied(true);
+        setTimeout(() => setCardCopied(false), 2500);
+      } else {
+        // Fallback to direct download
+        await handleDownloadCard();
+      }
+    } catch (err) {
+      console.error('Failed to copy card to clipboard:', err);
+      await handleDownloadCard();
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const loadPreset = (presetIds: string[]) => {
+    setTeam(presetIds);
+    setSelectedSlotIndex(null);
+  };
+
   return (
     <div className="space-y-8">
       {/* Top Banner Card */}
-      <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 md:p-8 backdrop-blur-md shadow-2xl">
+      <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 md:p-8 backdrop-blur-md shadow-2xl space-y-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 mb-2">
@@ -135,7 +221,43 @@ export default function FormationSandbox() {
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2.5">
+            {/* Export Card PNG Button */}
+            <button
+              onClick={handleDownloadCard}
+              disabled={isExporting || activeHeroes.length === 0}
+              className={`px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-all shadow-lg ${
+                activeHeroes.length === 0
+                  ? 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700/50'
+                  : 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-600/20 hover:scale-105 active:scale-95'
+              }`}
+              title="Download high-res lineup PNG card for Discord/Reddit"
+            >
+              {isExporting ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : cardDownloaded ? (
+                <Check className="w-4 h-4 text-white" />
+              ) : (
+                <Download className="w-4 h-4" />
+              )}
+              <span>{isExporting ? 'Generating...' : cardDownloaded ? 'Downloaded!' : 'Export Card (PNG)'}</span>
+            </button>
+
+            {/* Copy Card to Clipboard */}
+            <button
+              onClick={handleCopyCard}
+              disabled={isExporting || activeHeroes.length === 0}
+              className={`p-2.5 rounded-xl border text-xs font-bold transition-all ${
+                activeHeroes.length === 0
+                  ? 'bg-slate-900 border-slate-800 text-slate-600 cursor-not-allowed'
+                  : 'bg-slate-950 border-slate-800 hover:border-emerald-500/50 text-slate-300 hover:text-white'
+              }`}
+              title="Copy formation image to clipboard"
+            >
+              {cardCopied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+            </button>
+
+            {/* Share URL Button */}
             <button
               onClick={shareTeam}
               className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-slate-950 font-bold px-4 py-2.5 rounded-xl text-xs uppercase tracking-wider shadow-lg shadow-orange-500/20 flex items-center gap-2 transition-all hover:scale-105 active:scale-95"
@@ -143,6 +265,8 @@ export default function FormationSandbox() {
               {copied ? <Check className="w-4 h-4 text-emerald-950" /> : <Share2 className="w-4 h-4" />}
               <span>{copied ? 'Link Copied!' : 'Share Lineup'}</span>
             </button>
+
+            {/* Reset Button */}
             <button
               onClick={clearTeam}
               className="p-2.5 rounded-xl bg-slate-950 border border-slate-800 hover:border-red-500/50 text-slate-400 hover:text-red-400 transition-colors"
@@ -151,6 +275,37 @@ export default function FormationSandbox() {
               <RotateCcw className="w-4 h-4" />
             </button>
           </div>
+        </div>
+
+        {/* Quick Presets Row */}
+        <div className="pt-3 border-t border-slate-800/80 flex flex-wrap items-center gap-2">
+          <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mr-1">
+            Meta Presets:
+          </span>
+          <button
+            onClick={() => loadPreset(['paragon', 'secret_keeper', 'pyromancer', 'astrologer', 'bard', 'bishop'])}
+            className="text-xs px-2.5 py-1 rounded-lg bg-slate-950 hover:bg-slate-800 border border-slate-800 text-blue-300 hover:text-white transition-colors"
+          >
+            Mono League (+25%)
+          </button>
+          <button
+            onClick={() => loadPreset(['treant', 'druid', 'forest_maiden', 'windwalker', 'sage', 'pathfinder'])}
+            className="text-xs px-2.5 py-1 rounded-lg bg-slate-950 hover:bg-slate-800 border border-slate-800 text-emerald-300 hover:text-white transition-colors"
+          >
+            Mono Nature (+25%)
+          </button>
+          <button
+            onClick={() => loadPreset(['barbarian', 'desert_prince', 'soulmancer', 'warlock', 'headhunter', 'shaman'])}
+            className="text-xs px-2.5 py-1 rounded-lg bg-slate-950 hover:bg-slate-800 border border-slate-800 text-red-300 hover:text-white transition-colors"
+          >
+            Mono Horde (+25%)
+          </button>
+          <button
+            onClick={() => loadPreset(['paragon', 'desert_prince', 'pyromancer', 'soulmancer', 'astrologer', 'warlock'])}
+            className="text-xs px-2.5 py-1 rounded-lg bg-slate-950 hover:bg-slate-800 border border-slate-800 text-amber-300 hover:text-white transition-colors"
+          >
+            League + Horde Hybrid (+15%)
+          </button>
         </div>
       </div>
 
