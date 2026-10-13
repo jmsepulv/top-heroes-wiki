@@ -145,3 +145,4 @@ export const GUIDES: GuideArticle[] = [
 export function getGuideBySlug(slug: string): GuideArticle | undefined {
   return GUIDES.find((g) => g.slug === slug);
 }
+

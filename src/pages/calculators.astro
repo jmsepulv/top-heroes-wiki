@@ -1,0 +1,13 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ResourceCalculator from '../components/ResourceCalculator';
+---
+
+<Layout
+  title="Top Heroes Resource & Promotion Calculators | Progression Planning"
+  description="Calculate Meat, Hero EXP, Promotion Stones, Hero Shards for star awakenings, and Castle upgrade construction costs in Top Heroes."
+>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+    <ResourceCalculator client:load />
+  </div>
+</Layout>

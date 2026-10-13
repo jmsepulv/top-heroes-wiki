@@ -1,0 +1,13 @@
+---
+import Layout from '../layouts/Layout.astro';
+import FormationSandbox from '../components/FormationSandbox';
+---
+
+<Layout
+  title="Top Heroes 6-Slot Formation Sandbox & Synergy Checker"
+  description="Build and test custom 6-hero formations. Calculate dynamic mono and hybrid faction auras, role balances, and team synergy health in real time."
+>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+    <FormationSandbox client:load />
+  </div>
+</Layout>

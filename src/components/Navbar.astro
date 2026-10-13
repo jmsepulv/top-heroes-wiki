@@ -32,7 +32,7 @@ const isActive = (path: string) => {
     <nav class="hidden lg:flex items-center gap-1">
       <a
         href={getPath('/')}
-        class={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+        class={`px-2.5 py-1.5 rounded-lg text-sm font-medium transition-all ${
           isActive('/') ? 'text-white bg-slate-800 shadow-sm' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
         }`}
       >
@@ -40,16 +40,24 @@ const isActive = (path: string) => {
       </a>
       <a
         href={getPath('/roster')}
-        class={`px-3 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${
+        class={`px-2.5 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 ${
           isActive('/roster') ? 'text-amber-400 bg-amber-500/10 border border-amber-500/30' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
         }`}
       >
-        <span>Roster Builder</span>
-        <span class="bg-amber-500 text-black text-[10px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wider">Interactive</span>
+        <span>Roster</span>
+        <span class="bg-amber-500 text-black text-[9px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wider">Builder</span>
+      </a>
+      <a
+        href={getPath('/sandbox')}
+        class={`px-2.5 py-1.5 rounded-lg text-sm font-medium transition-all ${
+          isActive('/sandbox') ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/30' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
+        }`}
+      >
+        Sandbox
       </a>
       <a
         href={getPath('/heroes')}
-        class={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+        class={`px-2.5 py-1.5 rounded-lg text-sm font-medium transition-all ${
           isActive('/heroes') ? 'text-white bg-slate-800 shadow-sm' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
         }`}
       >
@@ -57,7 +65,7 @@ const isActive = (path: string) => {
       </a>
       <a
         href={getPath('/lineups')}
-        class={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+        class={`px-2.5 py-1.5 rounded-lg text-sm font-medium transition-all ${
           isActive('/lineups') ? 'text-white bg-slate-800 shadow-sm' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
         }`}
       >
@@ -65,7 +73,7 @@ const isActive = (path: string) => {
       </a>
       <a
         href={getPath('/events')}
-        class={`px-3 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 ${
+        class={`px-2.5 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 ${
           isActive('/events') ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/30' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
         }`}
       >
@@ -73,8 +81,16 @@ const isActive = (path: string) => {
         <span>Events</span>
       </a>
       <a
+        href={getPath('/calculators')}
+        class={`px-2.5 py-1.5 rounded-lg text-sm font-medium transition-all ${
+          isActive('/calculators') ? 'text-amber-400 bg-amber-500/10 border border-amber-500/30' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
+        }`}
+      >
+        Calculators
+      </a>
+      <a
         href={getPath('/guides')}
-        class={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+        class={`px-2.5 py-1.5 rounded-lg text-sm font-medium transition-all ${
           isActive('/guides') ? 'text-white bg-slate-800 shadow-sm' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
         }`}
       >
@@ -82,11 +98,11 @@ const isActive = (path: string) => {
       </a>
       <a
         href={getPath('/changelog')}
-        class={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+        class={`px-2.5 py-1.5 rounded-lg text-sm font-medium transition-all ${
           isActive('/changelog') ? 'text-white bg-slate-800 shadow-sm' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
         }`}
       >
-        Changelog
+        Patch
       </a>
     </nav>
 
